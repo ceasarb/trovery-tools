@@ -141,17 +141,17 @@ func TestInvokeEndpoint(t *testing.T) {
 	}
 
 	// Verify cost headers
-	if w.Header().Get("X-Ajnt-Tokens-In") != "10" {
-		t.Fatalf("expected X-Ajnt-Tokens-In=10, got %s", w.Header().Get("X-Ajnt-Tokens-In"))
+	if w.Header().Get("X-Demi-Tokens-In") != "10" {
+		t.Fatalf("expected X-Demi-Tokens-In=10, got %s", w.Header().Get("X-Demi-Tokens-In"))
 	}
-	if w.Header().Get("X-Ajnt-Tokens-Out") != "20" {
-		t.Fatalf("expected X-Ajnt-Tokens-Out=20, got %s", w.Header().Get("X-Ajnt-Tokens-Out"))
+	if w.Header().Get("X-Demi-Tokens-Out") != "20" {
+		t.Fatalf("expected X-Demi-Tokens-Out=20, got %s", w.Header().Get("X-Demi-Tokens-Out"))
 	}
-	if w.Header().Get("X-Ajnt-Tool-Calls") != "0" {
-		t.Fatalf("expected X-Ajnt-Tool-Calls=0, got %s", w.Header().Get("X-Ajnt-Tool-Calls"))
+	if w.Header().Get("X-Demi-Tool-Calls") != "0" {
+		t.Fatalf("expected X-Demi-Tool-Calls=0, got %s", w.Header().Get("X-Demi-Tool-Calls"))
 	}
-	if w.Header().Get("X-Ajnt-Cost") == "" {
-		t.Fatal("expected X-Ajnt-Cost header to be set")
+	if w.Header().Get("X-Demi-Cost") == "" {
+		t.Fatal("expected X-Demi-Cost header to be set")
 	}
 }
 
@@ -249,8 +249,8 @@ func TestCORSHeaders(t *testing.T) {
 	if w.Header().Get("Access-Control-Allow-Origin") != "*" {
 		t.Fatal("expected CORS origin header")
 	}
-	if !strings.Contains(w.Header().Get("Access-Control-Expose-Headers"), "X-Ajnt-Cost") {
-		t.Fatal("expected X-Ajnt-Cost in exposed headers")
+	if !strings.Contains(w.Header().Get("Access-Control-Expose-Headers"), "X-Demi-Cost") {
+		t.Fatal("expected X-Demi-Cost in exposed headers")
 	}
 }
 
@@ -368,8 +368,8 @@ func TestInvokeMonthlyBudgetExceeded(t *testing.T) {
 		t.Fatalf("expected 429, got %d: %s", w.Code, w.Body.String())
 	}
 
-	if w.Header().Get("X-Ajnt-Monthly-Remaining") != "0.000000" {
-		t.Fatalf("expected X-Ajnt-Monthly-Remaining=0.000000, got %s", w.Header().Get("X-Ajnt-Monthly-Remaining"))
+	if w.Header().Get("X-Demi-Monthly-Remaining") != "0.000000" {
+		t.Fatalf("expected X-Demi-Monthly-Remaining=0.000000, got %s", w.Header().Get("X-Demi-Monthly-Remaining"))
 	}
 }
 
@@ -412,9 +412,9 @@ func TestInvokeMonthlyBudgetRemainingHeader(t *testing.T) {
 		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
 	}
 
-	remaining := w.Header().Get("X-Ajnt-Monthly-Remaining")
+	remaining := w.Header().Get("X-Demi-Monthly-Remaining")
 	if remaining == "" {
-		t.Fatal("expected X-Ajnt-Monthly-Remaining header")
+		t.Fatal("expected X-Demi-Monthly-Remaining header")
 	}
 }
 

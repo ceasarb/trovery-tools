@@ -120,7 +120,7 @@ func withCORS(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Expose-Headers", "X-Ajnt-Cost, X-Ajnt-Tokens-In, X-Ajnt-Tokens-Out, X-Ajnt-Tool-Calls, X-Ajnt-Budget-Exceeded, X-Ajnt-Monthly-Remaining")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Demi-Cost, X-Demi-Tokens-In, X-Demi-Tokens-Out, X-Demi-Tool-Calls, X-Demi-Budget-Exceeded, X-Demi-Monthly-Remaining")
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)

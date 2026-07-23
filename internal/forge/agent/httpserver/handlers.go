@@ -142,7 +142,7 @@ func (s *Server) handleInvoke(w http.ResponseWriter, r *http.Request) {
 
 	setCostHeaders(w, sess)
 	if sess.BudgetStopped {
-		w.Header().Set("X-Ajnt-Budget-Exceeded", "true")
+		w.Header().Set("X-Demi-Budget-Exceeded", "true")
 	}
 
 	resp := InvokeResponse{
@@ -287,10 +287,10 @@ func (s *Server) applyOverrides(req *InvokeRequest) *agentcfg.AgentConfig {
 
 // setCostHeaders writes cost-tracking headers to the response.
 func setCostHeaders(w http.ResponseWriter, sess *runtime.Session) {
-	w.Header().Set("X-Ajnt-Cost", fmt.Sprintf("%.6f", sess.EstimatedCost()))
-	w.Header().Set("X-Ajnt-Tokens-In", strconv.Itoa(sess.TotalInput))
-	w.Header().Set("X-Ajnt-Tokens-Out", strconv.Itoa(sess.TotalOutput))
-	w.Header().Set("X-Ajnt-Tool-Calls", strconv.Itoa(sess.ToolCalls))
+	w.Header().Set("X-Demi-Cost", fmt.Sprintf("%.6f", sess.EstimatedCost()))
+	w.Header().Set("X-Demi-Tokens-In", strconv.Itoa(sess.TotalInput))
+	w.Header().Set("X-Demi-Tokens-Out", strconv.Itoa(sess.TotalOutput))
+	w.Header().Set("X-Demi-Tool-Calls", strconv.Itoa(sess.ToolCalls))
 }
 
 // writeSSE writes a single SSE event to the response.
@@ -314,7 +314,7 @@ func (s *Server) checkMonthlyBudget(w http.ResponseWriter) bool {
 	}
 	remaining, err := s.budget.CheckMonthlyBudget()
 	if err == guardrails.ErrMonthlyCapReached {
-		w.Header().Set("X-Ajnt-Monthly-Remaining", "0.000000")
+		w.Header().Set("X-Demi-Monthly-Remaining", "0.000000")
 		writeJSONError(w, http.StatusTooManyRequests, "monthly budget cap reached")
 		return true
 	}
@@ -323,7 +323,7 @@ func (s *Server) checkMonthlyBudget(w http.ResponseWriter) bool {
 		return false
 	}
 	if remaining > 0 {
-		w.Header().Set("X-Ajnt-Monthly-Remaining", fmt.Sprintf("%.6f", remaining))
+		w.Header().Set("X-Demi-Monthly-Remaining", fmt.Sprintf("%.6f", remaining))
 	}
 	return false
 }

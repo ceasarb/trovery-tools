@@ -138,9 +138,9 @@ curl -N localhost:8080/invoke/stream \
 | `GET /ready` | Readiness probe |
 | `GET /metrics` | Prometheus metrics |
 
-Every response carries cost/usage headers — `X-Ajnt-Tokens-In`, `X-Ajnt-Tokens-Out`, `X-Ajnt-Cost`,
-`X-Ajnt-Monthly-Remaining` — and the server returns `429` when the rate limit trips and
-`X-Ajnt-Budget-Exceeded` when a monthly cap is hit. `--sandbox` runs bundled MCP servers in
+Every response carries cost/usage headers — `X-Demi-Tokens-In`, `X-Demi-Tokens-Out`, `X-Demi-Cost`,
+`X-Demi-Monthly-Remaining` — and the server returns `429` when the rate limit trips and
+`X-Demi-Budget-Exceeded` when a monthly cap is hit. `--sandbox` runs bundled MCP servers in
 egress-firewalled containers.
 
 ### Evals as a first-class gate
