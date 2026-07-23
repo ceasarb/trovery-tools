@@ -1,0 +1,18 @@
+# Binaries
+/demi
+/demi-forge
+/demi-vigil
+/bin/
+/dist/
+
+# Test / build artifacts
+*.test
+*.out
+coverage.txt
+.coverage
+
+# Editor / OS
+.DS_Store
+
+# Private decision records (PDRs/ADRs) — working artifacts, not for the OSS repo
+.claude/

@@ -1,0 +1,46 @@
+# .demi/vigil.yaml — Demigo Vigil configuration
+# Docs: https://github.com/ceasarb/demigo-tools
+
+name: "{{.Name}}"
+version: "0.1.0"
+
+tools:
+  claude-code:
+    enabled: true
+    config:
+      model: claude-sonnet-4-5-20250929
+
+policies:
+  secrets:
+    scan_agent_output: true
+    scan_commits: true
+    block_patterns:
+      - "AWS_SECRET_ACCESS_KEY\\s*=\\s*\\S+"
+      - "PRIVATE_KEY"
+      - "password\\s*=\\s*\\S+"
+      - "Bearer\\s+[A-Za-z0-9\\-._~+/]{20,}"
+      - "ghp_[A-Za-z0-9]{36}"
+      - "sk-[A-Za-z0-9]{32,}"
+    # custom_patterns_file: ".demi/vigil-secrets.yaml"
+
+  filesystem:
+    read_only:
+      - ".env*"
+      - "secrets/"
+      - ".git/"
+      - "*.pem"
+      - "*.key"
+    # no_write:
+    #   - "production/"
+    #   - "deploy/"
+    # allowed_write:
+    #   - "src/"
+    #   - "tests/"
+
+tracking:
+  log_file_changes: true
+  log_commands: true
+  track_tokens: true
+  track_cost: true
+  session_dir: ".demi/vigil/sessions/"
+  export_format: "json"

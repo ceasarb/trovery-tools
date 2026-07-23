@@ -1,0 +1,22 @@
+name: ci
+
+# Dormant until the repo is pushed (PDR-004 defers publishing). Runs the same
+# checks as `make ci` locally. workflow_dispatch lets it be invoked manually if
+# the repo is ever pushed to GitHub.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: make ci (vet, build, test)
+        run: make ci
