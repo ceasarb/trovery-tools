@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ceasarb/demigo-tools/internal/forge/shared/delegation"
 	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
 )
 
@@ -118,6 +119,12 @@ func (c *Client) CallTool(ctx context.Context, name string, args interface{}) (*
 	params := protocol.ToolCallParams{
 		Name:      name,
 		Arguments: args,
+	}
+
+	// Attach a per-request delegated-identity assertion as MCP `_meta`, never as
+	// an argument (ADR-008). Forge only transports it; the tool server verifies.
+	if assertion, ok := delegation.OnBehalfOf(ctx); ok {
+		params.Meta = map[string]any{delegation.MetaKey: assertion}
 	}
 
 	start := time.Now()

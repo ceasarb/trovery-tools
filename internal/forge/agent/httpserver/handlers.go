@@ -11,6 +11,7 @@ import (
 	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
 	"github.com/ceasarb/demigo-tools/internal/forge/agent/guardrails"
 	"github.com/ceasarb/demigo-tools/internal/forge/agent/runtime"
+	"github.com/ceasarb/demigo-tools/internal/forge/shared/delegation"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -21,6 +22,10 @@ type InvokeRequest struct {
 	MaxTokens   *int     `json:"max_tokens,omitempty"`
 	Temperature *float64 `json:"temperature,omitempty"`
 	TimeoutSecs *int     `json:"timeout_secs,omitempty"`
+	// OnBehalfOf is an opaque, per-request delegated-identity assertion (ADR-008).
+	// Forge does not parse, validate, or trust it — it propagates the value to
+	// every tool call as MCP `_meta`. Absent ⇒ today's behavior exactly.
+	OnBehalfOf string `json:"on_behalf_of,omitempty"`
 }
 
 // InvokeResponse is the response body for /invoke.
@@ -102,6 +107,9 @@ func (s *Server) handleInvoke(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel = context.WithTimeout(ctx, time.Duration(*req.TimeoutSecs)*time.Second)
 		defer cancel()
 	}
+
+	// Carry the per-request delegated identity to every tool call (ADR-008).
+	ctx = delegation.WithOnBehalfOf(ctx, req.OnBehalfOf)
 
 	sess := runtime.NewSession(cfg, s.provider, s.serverMgr)
 	sess.Output = runtime.SilentOutput()
@@ -199,6 +207,9 @@ func (s *Server) handleInvokeStream(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel = context.WithTimeout(ctx, time.Duration(*req.TimeoutSecs)*time.Second)
 		defer cancel()
 	}
+
+	// Carry the per-request delegated identity to every tool call (ADR-008).
+	ctx = delegation.WithOnBehalfOf(ctx, req.OnBehalfOf)
 
 	// Set SSE headers before creating session
 	w.Header().Set("Content-Type", "text/event-stream")
