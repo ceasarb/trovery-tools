@@ -7,7 +7,7 @@
 [![CI](https://github.com/ceasarb/demigo-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/ceasarb/demigo-tools/actions/workflows/ci.yml)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/ceasarb/demigo-tools)](go.mod)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ceasarb/demigo-tools)](https://goreportcard.com/report/github.com/ceasarb/demigo-tools)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 **A platform for building, serving, evaluating, and governing production AI agents.** Demigo Tools is the
 infrastructure other builders stand on: scaffold an agent, wire it to MCP tools, prove it with evals,
@@ -36,12 +36,12 @@ Everything below is wired and tested today — not roadmap.
 | Capability | What it gives you |
 |---|---|
 | **Agent runtime** (plan · act · observe) | Tool-call loop with sequential *and* parallel tool execution, streaming activity sinks, per-session cost accounting |
-| **Model gateway** | One `Provider` interface over Anthropic, OpenAI, and Ollama — plus HuggingFace weights via `hf:` refs. Swap models without touching agent code |
+| **Model gateway** | One `Provider` interface over Anthropic, OpenAI, and Ollama, with per-model cost accounting, retry honoring `Retry-After`, and rate limiting. Swap models without touching agent code |
 | **MCP toolchain** | Scaffold → hot-reload dev REPL → protocol-compliance validator (naming, schema, security, errors, pagination, annotations, response shape) → registry → sandbox |
 | **Eval stack** | 20 assertion types (tool-use, output, cost, latency, MCP response shape), baseline snapshots for regression detection, HTML reports |
 | **Serving API** | `POST /invoke`, `POST /invoke/stream` (SSE), `GET /health`, `GET /ready`, `GET /metrics` — the internal "assistance API" other services call |
 | **Observability** | OpenTelemetry (OTLP) traces, Prometheus metrics, health/readiness probes, a session recorder for replay |
-| **Guardrails & reliability** | Per-request + monthly cost budgets enforced at serve time, provider retry honoring `Retry-After` with exponential backoff, sandbox egress firewall (iptables allowlist, default-DROP) |
+| **Guardrails & reliability** | Per-request cost cutoffs enforced in-process, monthly budgets tracked in a local cost store (see the note under [Serving API](#serving-api--the-assistance-api) before relying on it across replicas), provider retry honoring `Retry-After` with exponential backoff, sandbox egress firewall (iptables allowlist, default-DROP) |
 | **Deploy** | Generate Docker, Kubernetes, Cloud Run, Container Apps, and GitHub Actions artifacts from one agent config |
 | **Governance** (`vigil`) | Wrap any AI coding session in a recorded, policy-checked run with filesystem/secrets/skills policy and SARIF output for CI |
 
@@ -143,6 +143,12 @@ Every response carries cost/usage headers — `X-Demi-Tokens-In`, `X-Demi-Tokens
 `X-Demi-Budget-Exceeded` when a monthly cap is hit. `--sandbox` runs bundled MCP servers in
 egress-firewalled containers.
 
+> **`budget_monthly` is per-instance, not global.** It's tracked in a SQLite cost store under
+> `.demi/forge/`. On a stateless or autoscaled deploy — Cloud Run, or any multi-replica setup — that
+> file resets on cold start and isn't shared between replicas, so the monthly total is per-instance
+> and the cap won't hold across the fleet. Mount durable shared storage, or enforce the ceiling in
+> your own caller, if you need a real global budget. `budget_per_request` is in-process and unaffected.
+
 ### Evals as a first-class gate
 
 Evals are how you keep an agent honest across changes, not an afterthought.
@@ -172,7 +178,7 @@ Top-level forge groups are `agent`, `server`, and `model`, plus `init` and `dash
 |---|---|---|
 | `agent` | Agent lifecycle | `create`, `chat`, `inspect`, `add-server`, `skill`, `eval`, `serve`, `deploy`, `export` |
 | `server` | MCP server lifecycle | `create`, `dev` (hot-reload REPL), `test`, `validate`, `sandbox`, `eval`, `registry`, `deploy` |
-| `model` | Local models | `pull`, `list`, `remove` (Ollama / HuggingFace) |
+| `model` | Local models | `pull`, `list`, `remove` — Ollama, with `hf:org/name` refs resolved to Ollama names |
 | `dashboard` | Local web UI over agents, servers, evals, and sessions | — |
 
 `agent skill` (create / test / attach / detach / list / pack) manages SKILL.md skills;
@@ -237,4 +243,4 @@ demigo-tools/
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Apache License 2.0. See [LICENSE](LICENSE).
