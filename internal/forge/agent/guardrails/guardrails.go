@@ -13,20 +13,41 @@ var ErrBudgetExceeded = fmt.Errorf("per-request budget exceeded")
 // ErrMonthlyCapReached is returned when the monthly budget cap is hit.
 var ErrMonthlyCapReached = fmt.Errorf("monthly budget cap reached")
 
+// Ledger is the durable record of spend that the monthly cap is enforced
+// against. CostStore is the built-in SQLite implementation, which is
+// process-local: on ephemeral or per-instance disks (Cloud Run, Fargate, any
+// autoscaled container) it resets on cold start and is not shared between
+// instances, so the monthly ceiling holds only within one instance's lifetime.
+// Deployments that need a real cross-instance ceiling should supply their own
+// implementation backed by shared storage.
+//
+// Implementations must be safe for concurrent use.
+type Ledger interface {
+	// MonthlySpend returns total spend for the calendar month containing t.
+	MonthlySpend(t time.Time) (float64, error)
+	// RecordCost adds costUSD to the ledger for the month containing at.
+	RecordCost(agentName string, costUSD float64, at time.Time) error
+}
+
 // Budget tracks cost limits and enforcement.
 type Budget struct {
 	PerRequest float64 // USD limit per request (0 = unlimited)
 	Monthly    float64 // USD limit per calendar month (0 = unlimited)
-	store      *CostStore
+	store      Ledger
 }
 
 // New creates a Budget with the given limits.
-// If store is nil, monthly tracking is disabled.
-func New(perRequest, monthly float64, store *CostStore) *Budget {
+//
+// If ledger is nil, monthly tracking is disabled and the monthly cap is not
+// enforced — only the in-process per-request limit applies. Pass an untyped nil
+// for that case: a nil *CostStore assigned to the Ledger parameter is a non-nil
+// interface holding a nil pointer, which panics on first use rather than
+// degrading to "tracking disabled".
+func New(perRequest, monthly float64, ledger Ledger) *Budget {
 	return &Budget{
 		PerRequest: perRequest,
 		Monthly:    monthly,
-		store:      store,
+		store:      ledger,
 	}
 }
 
@@ -90,10 +111,14 @@ func (b *Budget) MonthlyRemaining() float64 {
 	return remaining
 }
 
-// CostStore persists monthly cost data in SQLite.
+// CostStore persists monthly cost data in SQLite. It is process-local — see
+// Ledger for what that means for the monthly cap under multi-instance or
+// ephemeral-disk deployments.
 type CostStore struct {
 	db *storage.DB
 }
+
+var _ Ledger = (*CostStore)(nil)
 
 var costMigrations = []storage.Migration{
 	{

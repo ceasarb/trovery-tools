@@ -114,6 +114,12 @@ func (s *Server) handleInvoke(w http.ResponseWriter, r *http.Request) {
 	sess := runtime.NewSession(cfg, s.provider, s.serverMgr)
 	sess.Output = runtime.SilentOutput()
 
+	// Ledger the spend on every exit path, not just success. A timeout, a
+	// provider error, or a tool failure still burned the tokens consumed up to
+	// that point, and a monthly ceiling that only counts successful runs is not
+	// a ceiling.
+	defer s.recordCost(sess)
+
 	// Wire per-request budget check
 	s.wireBudgetCheck(sess)
 
@@ -132,8 +138,6 @@ func (s *Server) handleInvoke(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Record cost for monthly tracking
-	s.recordCost(sess)
 	s.recordUsageMetrics(sess)
 	s.recordRequestMetrics("/invoke", http.StatusOK, start)
 
@@ -219,6 +223,11 @@ func (s *Server) handleInvokeStream(w http.ResponseWriter, r *http.Request) {
 	sess := runtime.NewSession(cfg, s.provider, s.serverMgr)
 	sess.Output = runtime.SilentOutput()
 
+	// Ledger the spend on every exit path — including a client that disconnects
+	// mid-stream, which surfaces here as a SendMessage error after tokens were
+	// already spent.
+	defer s.recordCost(sess)
+
 	// Wire per-request budget check
 	s.wireBudgetCheck(sess)
 
@@ -242,8 +251,6 @@ func (s *Server) handleInvokeStream(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Record cost for monthly tracking
-	s.recordCost(sess)
 	s.recordUsageMetrics(sess)
 	s.recordRequestMetrics("/invoke/stream", http.StatusOK, start)
 

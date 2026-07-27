@@ -13,6 +13,7 @@ import (
 	"github.com/ceasarb/demigo-tools/internal/forge/agent/guardrails"
 	"github.com/ceasarb/demigo-tools/internal/forge/agent/httpserver"
 	"github.com/ceasarb/demigo-tools/internal/forge/agent/metrics"
+	"github.com/ceasarb/demigo-tools/internal/forge/agent/runtime"
 	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
 	"github.com/ceasarb/demigo-tools/internal/forge/server/sandbox"
 	"github.com/ceasarb/demigo-tools/internal/forge/shared/auth"
@@ -289,20 +290,37 @@ func initBudget(cfg *agentcfg.AgentConfig) (*guardrails.Budget, func()) {
 		return nil, nil
 	}
 
-	// Open cost store for monthly tracking
+	// A budget over an unpriced model is inert: every run estimates at $0, so
+	// neither ceiling can ever trip. Fail loudly at startup — silently serving
+	// with a guardrail that cannot fire is worse than not configuring one.
+	if !runtime.KnownModel(cfg.Model.Model) {
+		console.Warning(fmt.Sprintf(
+			"Model %q has no pricing entry — budget_per_request/budget_monthly will NEVER trip. "+
+				"Use a priced model ID (aliases like claude-opus-5, not dated snapshots) or remove the budget settings.",
+			cfg.Model.Model))
+	}
+
+	// Open the built-in SQLite cost store for monthly tracking.
+	//
+	// ledger stays an untyped nil when the store can't be opened: assigning a
+	// nil *CostStore to the interface would produce a non-nil Ledger holding a
+	// nil pointer, and Budget would call through it and panic instead of
+	// treating monthly tracking as disabled.
 	var store *guardrails.CostStore
+	var ledger guardrails.Ledger
 	if monthly > 0 {
 		demiDir := ".demi/forge"
 		os.MkdirAll(demiDir, 0o755)
 		dbPath := filepath.Join(demiDir, "cost.db")
-		var err error
-		store, err = guardrails.NewCostStore(dbPath)
+		opened, err := guardrails.NewCostStore(dbPath)
 		if err != nil {
-			console.Warning(fmt.Sprintf("Cost tracking unavailable: %v", err))
+			console.Warning(fmt.Sprintf("Cost tracking unavailable — monthly cap will not be enforced: %v", err))
+		} else {
+			store, ledger = opened, opened
 		}
 	}
 
-	budget := guardrails.New(perReq, monthly, store)
+	budget := guardrails.New(perReq, monthly, ledger)
 	cleanup := func() {
 		if store != nil {
 			store.Close()

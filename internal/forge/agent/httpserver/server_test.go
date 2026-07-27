@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -46,7 +47,7 @@ func newTestServer(response string) *Server {
 			Model:     "gpt-4o-mini",
 			MaxTokens: 1024,
 		},
-		System:  "You are a test assistant.",
+		System:   "You are a test assistant.",
 		Settings: agentcfg.AgentSettings{MaxToolCalls: 10, Namespacing: "auto"},
 	}
 
@@ -343,8 +344,8 @@ func TestInvokeMonthlyBudgetExceeded(t *testing.T) {
 	budget := guardrails.New(0, 10.0, store)
 
 	cfg := &agentcfg.AgentConfig{
-		Name: "test-agent",
-		Model: agentcfg.ModelConfig{Provider: "openai", Model: "gpt-4o-mini", MaxTokens: 1024},
+		Name:     "test-agent",
+		Model:    agentcfg.ModelConfig{Provider: "openai", Model: "gpt-4o-mini", MaxTokens: 1024},
 		Settings: agentcfg.AgentSettings{MaxToolCalls: 10, Namespacing: "auto"},
 	}
 	srv := New(Config{
@@ -387,8 +388,8 @@ func TestInvokeMonthlyBudgetRemainingHeader(t *testing.T) {
 	budget := guardrails.New(0, 10.0, store)
 
 	cfg := &agentcfg.AgentConfig{
-		Name: "test-agent",
-		Model: agentcfg.ModelConfig{Provider: "openai", Model: "gpt-4o-mini", MaxTokens: 1024},
+		Name:     "test-agent",
+		Model:    agentcfg.ModelConfig{Provider: "openai", Model: "gpt-4o-mini", MaxTokens: 1024},
 		Settings: agentcfg.AgentSettings{MaxToolCalls: 10, Namespacing: "auto"},
 	}
 	srv := New(Config{
@@ -418,3 +419,79 @@ func TestInvokeMonthlyBudgetRemainingHeader(t *testing.T) {
 	}
 }
 
+// failThenProvider succeeds for the first n calls, then returns an error.
+// Tokens consumed by the successful turns are real spend that must still reach
+// the ledger even though the request as a whole fails.
+type failThenProvider struct {
+	succeed int
+	calls   int
+}
+
+func (p *failThenProvider) next() (*provider.Response, error) {
+	p.calls++
+	if p.calls > p.succeed {
+		return nil, fmt.Errorf("provider exploded")
+	}
+	// Return a tool_use so the runtime loops and issues another model turn.
+	return &provider.Response{
+		Content:    []provider.Content{{Type: "tool_use", ID: "t1", Name: "nonexistent_tool", Input: map[string]any{}}},
+		Usage:      provider.Usage{InputTokens: 1_000_000, OutputTokens: 1_000_000},
+		StopReason: "tool_use",
+	}, nil
+}
+
+func (p *failThenProvider) CreateMessage([]provider.Message, []provider.ToolDef, agentcfg.ModelConfig, string) (*provider.Response, error) {
+	return p.next()
+}
+
+func (p *failThenProvider) CreateMessageStream(_ []provider.Message, _ []provider.ToolDef, _ agentcfg.ModelConfig, _ string, handler provider.StreamHandler) (*provider.Response, error) {
+	resp, err := p.next()
+	if err != nil {
+		return nil, err
+	}
+	handler(provider.StreamEvent{Type: "done"})
+	return resp, nil
+}
+
+// A run that burns tokens and then fails must still be ledgered. A monthly
+// ceiling that only counts successful runs is not a ceiling.
+func TestInvokeRecordsCostOnFailure(t *testing.T) {
+	for _, endpoint := range []string{"/invoke", "/invoke/stream"} {
+		t.Run(endpoint, func(t *testing.T) {
+			dir := t.TempDir()
+			store, err := guardrails.NewCostStore(filepath.Join(dir, "cost.db"))
+			if err != nil {
+				t.Fatalf("cost store: %v", err)
+			}
+			defer store.Close()
+
+			srv := New(Config{
+				AgentConfig: &agentcfg.AgentConfig{
+					Name:     "test-agent",
+					Model:    agentcfg.ModelConfig{Provider: "openai", Model: "gpt-4o-mini", MaxTokens: 1024},
+					Settings: agentcfg.AgentSettings{MaxToolCalls: 10, Namespacing: "auto"},
+				},
+				Provider:  &failThenProvider{succeed: 1},
+				ServerMgr: servermgr.NewManager(),
+				Budget:    guardrails.New(0, 1000.0, store),
+				AgentDir:  "/tmp/test-agent",
+				Host:      "localhost",
+				Port:      0,
+			})
+			srv.MarkReady()
+
+			body := strings.NewReader(`{"message":"go"}`)
+			req := httptest.NewRequest(http.MethodPost, endpoint, body)
+			rec := httptest.NewRecorder()
+			srv.httpSrv.Handler.ServeHTTP(rec, req)
+
+			spent, err := store.MonthlySpend(time.Now())
+			if err != nil {
+				t.Fatalf("monthly spend: %v", err)
+			}
+			if spent <= 0 {
+				t.Errorf("failed run recorded $%v — tokens were burned but never ledgered", spent)
+			}
+		})
+	}
+}

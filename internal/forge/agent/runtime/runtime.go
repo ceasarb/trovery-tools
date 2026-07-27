@@ -172,12 +172,25 @@ type CostPerMillion struct {
 	Output float64
 }
 
-// Rough pricing — will be made configurable later
+// Rough pricing — will be made configurable later.
+//
+// Key on the bare alias, never the dated snapshot: `claude-haiku-4-5` is the
+// canonical ID and `claude-haiku-4-5-20251001` is the pinned form of the same
+// model. EstimateCost normalizes the dated form back to the alias, so only the
+// alias needs an entry here. Keying a model solely by its dated ID silently
+// prices every run under the alias at $0 and makes budget guardrails inert.
 var modelCosts = map[string]CostPerMillion{
-	// Claude 4.6
-	"claude-opus-4-6":           {Input: 5.0, Output: 25.0},
-	"claude-sonnet-4-6":         {Input: 3.0, Output: 15.0},
-	"claude-haiku-4-5-20251001": {Input: 1.0, Output: 5.0},
+	// Claude 5
+	"claude-fable-5":  {Input: 10.0, Output: 50.0},
+	"claude-mythos-5": {Input: 10.0, Output: 50.0},
+	"claude-opus-5":   {Input: 5.0, Output: 25.0},
+	"claude-sonnet-5": {Input: 3.0, Output: 15.0}, // intro $2/$10 through 2026-08-31; standard rate is the safe estimate
+	// Claude 4.x
+	"claude-opus-4-8":   {Input: 5.0, Output: 25.0},
+	"claude-opus-4-7":   {Input: 5.0, Output: 25.0},
+	"claude-opus-4-6":   {Input: 5.0, Output: 25.0},
+	"claude-sonnet-4-6": {Input: 3.0, Output: 15.0},
+	"claude-haiku-4-5":  {Input: 1.0, Output: 5.0},
 	// Legacy
 	"claude-sonnet-4-20250514": {Input: 3.0, Output: 15.0},
 	"claude-opus-4-20250514":   {Input: 15.0, Output: 75.0},
@@ -353,12 +366,51 @@ func (s *Session) EstimatedCost() float64 {
 }
 
 // EstimateCost calculates estimated cost for a given model and token counts.
+// An unpriced model estimates at $0 — call KnownModel before relying on this to
+// enforce anything.
 func EstimateCost(model string, inputTokens, outputTokens int) float64 {
-	cost, ok := modelCosts[model]
+	cost, ok := lookupCost(model)
 	if !ok {
 		return 0
 	}
 	return (float64(inputTokens)/1_000_000)*cost.Input + (float64(outputTokens)/1_000_000)*cost.Output
+}
+
+// KnownModel reports whether the model has an entry in the cost table. Budget
+// enforcement is meaningless without one: every run estimates at $0, so no
+// ceiling can ever be reached.
+func KnownModel(model string) bool {
+	_, ok := lookupCost(model)
+	return ok
+}
+
+// lookupCost resolves a model to its pricing, falling back to the bare alias
+// when given a dated snapshot ID (`claude-haiku-4-5-20251001` → `claude-haiku-4-5`).
+func lookupCost(model string) (CostPerMillion, bool) {
+	if cost, ok := modelCosts[model]; ok {
+		return cost, true
+	}
+	if base, ok := stripDateSuffix(model); ok {
+		if cost, ok := modelCosts[base]; ok {
+			return cost, true
+		}
+	}
+	return CostPerMillion{}, false
+}
+
+// stripDateSuffix removes a trailing "-YYYYMMDD" snapshot suffix, reporting
+// whether one was present.
+func stripDateSuffix(model string) (string, bool) {
+	const suffixLen = len("-20060102")
+	if len(model) <= suffixLen || model[len(model)-suffixLen] != '-' {
+		return model, false
+	}
+	for _, c := range model[len(model)-suffixLen+1:] {
+		if c < '0' || c > '9' {
+			return model, false
+		}
+	}
+	return model[:len(model)-suffixLen], true
 }
 
 // Summary returns a session summary string including child agent stats.
