@@ -86,6 +86,69 @@ checks CI runs).
 
 ---
 
+## Quickstart
+
+Clone to a served agent with cost accounting, in about a minute. Needs a provider key —
+`export ANTHROPIC_API_KEY=sk-...` — or swap in `--provider ollama --model llama3.2` to stay
+fully local and keyless.
+
+**1. Scaffold a workspace and an agent.**
+
+```bash
+demi forge init quickstart && cd quickstart
+demi forge agent create researcher \
+  --provider anthropic --model claude-haiku-4-5 --template researcher
+```
+
+**2. Give it a tool** — scaffold a fresh MCP server and wire it in.
+
+```bash
+demi forge server create \
+  --name fetch --language python --transport stdio --description "Fetch a URL"
+demi forge agent add-server researcher --server ./servers/fetch
+demi forge agent inspect researcher      # config, tools, and the agent's DAG
+```
+
+**3. Serve it** behind the HTTP API.
+
+```bash
+demi forge agent serve researcher --no-auth --port 8080
+```
+
+Then from another shell:
+
+```bash
+curl -s localhost:8080/health
+curl -s localhost:8080/invoke -H 'content-type: application/json' \
+  -d '{"message": "In one sentence, what is an MCP server?"}'
+```
+
+**4. Meter it.** Every response carries usage and cost as headers:
+
+```bash
+curl -sD - -o /dev/null localhost:8080/invoke -H 'content-type: application/json' \
+  -d '{"message": "hello"}' | grep -i '^x-demi-'
+```
+
+You get `X-Demi-Tokens-In`, `X-Demi-Tokens-Out`, `X-Demi-Tool-Calls`, and `X-Demi-Cost`. Set
+`budget_per_request` or `budget_monthly` in `agent.yaml` and the same call also returns
+`X-Demi-Monthly-Remaining`, plus `X-Demi-Budget-Exceeded` once a cap is hit. Read the note under
+[Serving API](#serving-api--the-assistance-api) before relying on `budget_monthly` across replicas.
+
+**5. Stream, observe, ship.**
+
+```bash
+curl -N localhost:8080/invoke/stream -H 'content-type: application/json' \
+  -d '{"message": "Give me two quick facts about Go."}'   # SSE: text, tool_start, tool_result, done
+curl -s localhost:8080/metrics | grep '^demi_'            # Prometheus
+demi forge agent deploy researcher --target kubernetes    # → deploy/kubernetes/
+```
+
+From here: [`demi forge`](#demi-forge--build) for evals, skills, and sandboxing, or
+[`demi vigil`](#demi-vigil--govern) to wrap the work in a recorded, policy-checked session.
+
+---
+
 ## `demi forge` — build
 
 Take an agent from prototype to production: scaffold it, wire MCP servers and skills, run eval suites,
@@ -96,7 +159,8 @@ serve it behind an HTTP API, and generate deploy artifacts.
 ```bash
 demi forge init my-workspace                 # scaffold a .demi/ workspace
 demi forge agent create researcher           # new agent → agent.yaml
-demi forge server create fetch               # new MCP server the agent can call
+demi forge server create --name fetch \
+  --language python --transport stdio        # new MCP server the agent can call
 demi forge agent add-server researcher \
   --server ./servers/fetch                   # wire the server into the agent
 demi forge agent skill create summarize      # scaffold a SKILL.md and attach it
