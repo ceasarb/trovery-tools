@@ -80,7 +80,7 @@ type ToolCallParams struct {
 	Arguments interface{} `json:"arguments,omitempty"`
 	// Meta carries out-of-band protocol metadata (MCP `_meta`) that the model
 	// never authors — e.g. a per-request delegated-identity assertion keyed
-	// `tandem.on_behalf_of` (ADR-008). It is never merged into Arguments.
+	// `demi.on_behalf_of` (ADR-008). It is never merged into Arguments.
 	Meta map[string]any `json:"_meta,omitempty"`
 }
 

@@ -9,7 +9,7 @@ func TestToolCallParams_MetaMarshalsAsUnderscoreMeta(t *testing.T) {
 	params := ToolCallParams{
 		Name:      "gateway.read",
 		Arguments: map[string]any{"id": "42"},
-		Meta:      map[string]any{"tandem.on_behalf_of": "assertion"},
+		Meta:      map[string]any{"demi.on_behalf_of": "assertion"},
 	}
 	data, err := json.Marshal(params)
 	if err != nil {
@@ -29,7 +29,7 @@ func TestToolCallParams_MetaMarshalsAsUnderscoreMeta(t *testing.T) {
 	if err := json.Unmarshal(meta, &metaMap); err != nil {
 		t.Fatal(err)
 	}
-	if metaMap["tandem.on_behalf_of"] != "assertion" {
+	if metaMap["demi.on_behalf_of"] != "assertion" {
 		t.Fatalf("meta key missing/wrong: %v", metaMap)
 	}
 
@@ -38,7 +38,7 @@ func TestToolCallParams_MetaMarshalsAsUnderscoreMeta(t *testing.T) {
 	if err := json.Unmarshal(decoded["arguments"], &argMap); err != nil {
 		t.Fatal(err)
 	}
-	if _, present := argMap["tandem.on_behalf_of"]; present {
+	if _, present := argMap["demi.on_behalf_of"]; present {
 		t.Fatal("assertion leaked into arguments")
 	}
 }
