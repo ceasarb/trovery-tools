@@ -56,6 +56,10 @@ func runAgentChat(cmd *cobra.Command, args []string) error {
 	// Load .env from workspace root / CWD
 	env.LoadDotenv()
 
+	if err := requireSupportedTuning(&cfg.Model); err != nil {
+		return err
+	}
+
 	console.Header("Agent: " + cfg.Name)
 	console.Dim(fmt.Sprintf("  Model: %s/%s", cfg.Model.Provider, cfg.Model.Model))
 
@@ -183,8 +187,14 @@ func runAgentChat(cmd *cobra.Command, args []string) error {
 	// Create runtime session
 	sess := runtime.NewSession(cfg, prov, mgr)
 
-	// Wire per-request budget if configured
+	// Wire per-request budget if configured. Same fail-closed rule as `agent serve`: a
+	// budget over an unpriced model can never trip, and this is the path where that costs
+	// the most — chat enforces no monthly ceiling and records no cost, so an unpriced model
+	// here is unmetered in every direction.
 	if cfg.Settings.BudgetPerRequest > 0 {
+		if err := requirePricedModel(cfg); err != nil {
+			return err
+		}
 		budget := guardrails.New(cfg.Settings.BudgetPerRequest, 0, nil)
 		sess.BudgetCheck = budget.CheckRequestBudget
 		console.Dim(fmt.Sprintf("  Budget: $%.2f/request", cfg.Settings.BudgetPerRequest))

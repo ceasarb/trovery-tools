@@ -101,7 +101,12 @@ func (s *Server) handleInvoke(w http.ResponseWriter, r *http.Request) {
 		defer s.metrics.ActiveSessions.Dec()
 	}
 
-	cfg := s.applyOverrides(req)
+	cfg, err := s.applyOverrides(req)
+	if err != nil {
+		s.recordRequestMetrics("/invoke", http.StatusBadRequest, start)
+		writeJSONError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 	if req.TimeoutSecs != nil && *req.TimeoutSecs > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, time.Duration(*req.TimeoutSecs)*time.Second)
@@ -205,7 +210,12 @@ func (s *Server) handleInvokeStream(w http.ResponseWriter, r *http.Request) {
 		defer s.metrics.ActiveSessions.Dec()
 	}
 
-	cfg := s.applyOverrides(req)
+	cfg, err := s.applyOverrides(req)
+	if err != nil {
+		s.recordRequestMetrics("/invoke/stream", http.StatusBadRequest, start)
+		writeJSONError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 	if req.TimeoutSecs != nil && *req.TimeoutSecs > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, time.Duration(*req.TimeoutSecs)*time.Second)
@@ -290,7 +300,13 @@ func decodeInvokeRequest(r *http.Request) (*InvokeRequest, error) {
 }
 
 // applyOverrides creates a copy of the agent config with request-level overrides applied.
-func (s *Server) applyOverrides(req *InvokeRequest) *agentcfg.AgentConfig {
+//
+// Returns an error when an override names a parameter the served model rejects, so the
+// caller can answer 400 rather than forwarding a request the provider will refuse. The
+// config-level equivalent is refused at startup (ADR-010 §5), but an override arrives
+// per request and has to be caught here. Validation lives with application rather than
+// in decodeInvokeRequest because only this function knows the effective model.
+func (s *Server) applyOverrides(req *InvokeRequest) (*agentcfg.AgentConfig, error) {
 	cfg := *s.cfg
 	cfg.Model = s.cfg.Model
 
@@ -298,9 +314,14 @@ func (s *Server) applyOverrides(req *InvokeRequest) *agentcfg.AgentConfig {
 		cfg.Model.MaxTokens = *req.MaxTokens
 	}
 	if req.Temperature != nil {
+		if *req.Temperature > 0 && !runtime.SupportsTemperature(cfg.Model.Model) {
+			return nil, fmt.Errorf(
+				"model %q does not accept `temperature`: remove it from the request body",
+				cfg.Model.Model)
+		}
 		cfg.Model.Temperature = *req.Temperature
 	}
-	return &cfg
+	return &cfg, nil
 }
 
 // setCostHeaders writes cost-tracking headers to the response.

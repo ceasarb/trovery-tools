@@ -15,6 +15,7 @@ import (
 	anthropicProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/anthropic"
 	ollamaProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/ollama"
 	openaiProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/openai"
+	"github.com/ceasarb/demigo-tools/internal/forge/agent/runtime"
 	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
 	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
 	"github.com/ceasarb/demigo-tools/internal/forge/shared/env"
@@ -106,6 +107,18 @@ func runAgentEval(cmd *cobra.Command, args []string) error {
 		console.Warning("No eval suites found")
 		console.Dim("  Create a suite at evals/<name>.eval.yaml")
 		return nil
+	}
+
+	// A `max_cost_usd` assertion over a model with no pricing entry is an assertion that
+	// cannot fail: every run prices at $0, so the check passes no matter what the suite
+	// actually spent. That is worse than having no assertion, because the report says the
+	// budget held. Same fail-closed rule as `agent serve` and `agent chat`.
+	if err := requirePricedModelForSuites(cfg, suites); err != nil {
+		return err
+	}
+
+	if err := requireSupportedTuningForSuites(cfg, suites); err != nil {
+		return err
 	}
 
 	console.Dim(fmt.Sprintf("  Found %d suite(s)", len(suites)))
@@ -323,4 +336,73 @@ func init() {
 	agentEvalCmd.Flags().BoolVar(&evalUpdateBaseline, "update-baselines", false, "Set current results as baselines")
 
 	agentCmd.AddCommand(agentEvalCmd)
+}
+
+// requirePricedModelForSuites refuses to run when a suite asserts on cost but the model it
+// would run has no pricing entry.
+//
+// Scoped to suites that actually assert on cost: an eval suite with no cost assertion is a
+// correctness suite, and refusing to run it over an unpriced model would block work that
+// never claimed to measure money. A suite-level `settings.model` override is checked too —
+// it is the model that will really run.
+func requirePricedModelForSuites(cfg *agentcfg.AgentConfig, suites []*eval.Suite) error {
+	for _, suite := range suites {
+		if !suiteAssertsCost(suite) {
+			continue
+		}
+		model := cfg.Model.Model
+		if suite.Settings.Model != "" {
+			model = suite.Settings.Model
+		}
+		if runtime.KnownModel(model) {
+			continue
+		}
+		return fmt.Errorf(
+			"suite %q asserts max_cost_usd but model %q has no pricing entry: every run "+
+				"would price at $0.0000 and the assertion could never fail.\nUse a priced "+
+				"model id (an alias like claude-opus-5, not a dated snapshot), or drop the "+
+				"cost assertion",
+			suite.Name, model)
+	}
+	return nil
+}
+
+// requireSupportedTuningForSuites refuses to run when the agent's tuning parameters are
+// rejected by the model a suite would actually run against.
+//
+// Unlike requirePricedModelForSuites this is not scoped to suites that opt in to
+// anything: a rejected parameter 400s every request, so it breaks a correctness suite
+// just as thoroughly as a cost one. The suite-level `settings.model` override matters
+// here for the same reason it does there — it is the model that will really run, and it
+// is the common way a suite ends up on a newer model than the agent config names.
+//
+// Note the temperature checked is always the agent config's. A suite's
+// `settings.temperature` is parsed (eval.Settings) but never applied by the runner, so
+// it cannot be what reaches the provider.
+func requireSupportedTuningForSuites(cfg *agentcfg.AgentConfig, suites []*eval.Suite) error {
+	for _, suite := range suites {
+		model := cfg.Model.Model
+		if suite.Settings.Model != "" {
+			model = suite.Settings.Model
+		}
+		effective := cfg.Model
+		effective.Model = model
+		if err := requireSupportedTuning(&effective); err != nil {
+			return fmt.Errorf("suite %q: %w", suite.Name, err)
+		}
+	}
+	return nil
+}
+
+func suiteAssertsCost(suite *eval.Suite) bool {
+	scenarios := suite.Scenarios
+	scenarios = append(scenarios, suite.Cases...)
+	for _, sc := range scenarios {
+		for _, a := range sc.Assertions {
+			if a.Type == "max_cost_usd" {
+				return true
+			}
+		}
+	}
+	return false
 }

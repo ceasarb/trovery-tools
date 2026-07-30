@@ -64,6 +64,10 @@ func runAgentServe(cmd *cobra.Command, args []string) error {
 
 	env.LoadDotenv()
 
+	if err := requireSupportedTuning(&cfg.Model); err != nil {
+		return err
+	}
+
 	console.Header("Agent Serve: " + cfg.Name)
 	console.Dim(fmt.Sprintf("  Model: %s/%s", cfg.Model.Provider, cfg.Model.Model))
 
@@ -123,7 +127,10 @@ func runAgentServe(cmd *cobra.Command, args []string) error {
 	fmt.Println()
 
 	// Initialize budget guardrails if configured
-	budget, cleanupBudget := initBudget(cfg)
+	budget, cleanupBudget, err := initBudget(cfg)
+	if err != nil {
+		return err
+	}
 	if cleanupBudget != nil {
 		defer cleanupBudget()
 	}
@@ -282,22 +289,64 @@ func resolveSandboxRuntime(override string) (container.Runtime, error) {
 	return container.DetectRuntime()
 }
 
-func initBudget(cfg *agentcfg.AgentConfig) (*guardrails.Budget, func()) {
+// requirePricedModel refuses a configured budget over a model with no pricing entry.
+//
+// Shared by `agent serve`, `agent chat` and the eval runner so all three fail the same way.
+// `agent chat` is where an unpriced model bites hardest: it enforces no monthly ceiling and
+// records no cost, so there an unpriced model is unmetered in every direction at once.
+func requirePricedModel(cfg *agentcfg.AgentConfig) error {
+	if runtime.KnownModel(cfg.Model.Model) {
+		return nil
+	}
+	return fmt.Errorf(
+		"model %q has no pricing entry, so budget_per_request/budget_monthly can never "+
+			"trip: every run would estimate at $0 and the ceiling you configured would "+
+			"never fire.\nUse a priced model id (an alias like claude-opus-5, not a dated "+
+			"snapshot), or remove the budget settings to serve deliberately unbounded",
+		cfg.Model.Model)
+}
+
+// requireSupportedTuning refuses a model tuning parameter the configured model rejects.
+//
+// Shared by `agent serve`, `agent chat` and the eval runner, alongside requirePricedModel
+// (ADR-010 §5). Unlike the budget check it is unconditional: a rejected parameter is not a
+// guardrail that quietly fails to fire, it is a 400 on every single request. Refusing at
+// startup converts a permanent runtime failure into one boot-time error that names the
+// line to delete.
+//
+// Only models positively known to reject a parameter are refused — see
+// runtime.Capabilities. An unrecognised model is left alone, so a model newer than this
+// binary behaves exactly as it does today rather than failing to boot.
+func requireSupportedTuning(m *agentcfg.ModelConfig) error {
+	if m.Temperature > 0 && !runtime.SupportsTemperature(m.Model) {
+		return fmt.Errorf(
+			"model %q does not accept `temperature` — it was removed on Claude Opus 4.7 "+
+				"and later, and sending it returns HTTP 400 on every request.\nRemove "+
+				"`temperature: %g` from the model block in agent.yaml",
+			m.Model, m.Temperature)
+	}
+	return nil
+}
+
+func initBudget(cfg *agentcfg.AgentConfig) (*guardrails.Budget, func(), error) {
 	perReq := cfg.Settings.BudgetPerRequest
 	monthly := cfg.Settings.BudgetMonthly
 
 	if perReq <= 0 && monthly <= 0 {
-		return nil, nil
+		return nil, nil, nil
 	}
 
-	// A budget over an unpriced model is inert: every run estimates at $0, so
-	// neither ceiling can ever trip. Fail loudly at startup — silently serving
-	// with a guardrail that cannot fire is worse than not configuring one.
-	if !runtime.KnownModel(cfg.Model.Model) {
-		console.Warning(fmt.Sprintf(
-			"Model %q has no pricing entry — budget_per_request/budget_monthly will NEVER trip. "+
-				"Use a priced model ID (aliases like claude-opus-5, not dated snapshots) or remove the budget settings.",
-			cfg.Model.Model))
+	// A budget over an unpriced model is inert: every run estimates at $0, so neither
+	// ceiling can ever trip. Refuse to start.
+	//
+	// This was a warning until 2026-07-29, and a warning is the wrong shape for it. The
+	// operator configured a budget, which is a statement that runs must be bounded; we
+	// cannot honour it, so continuing serves unbounded spend to someone who believes they
+	// capped it. A warning scrolls past on boot and the service looks healthy forever
+	// after. Downstream (mc-web ADR-028) had to build an independent Postgres ceiling in
+	// part because this could not be relied on — fail closed so the next integrator can.
+	if err := requirePricedModel(cfg); err != nil {
+		return nil, nil, err
 	}
 
 	// Open the built-in SQLite cost store for monthly tracking.
@@ -326,7 +375,7 @@ func initBudget(cfg *agentcfg.AgentConfig) (*guardrails.Budget, func()) {
 			store.Close()
 		}
 	}
-	return budget, cleanup
+	return budget, cleanup, nil
 }
 
 func resolveAuthConfig(token string, noAuth bool, host string) *auth.Config {
