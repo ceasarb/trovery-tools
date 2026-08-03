@@ -18,5 +18,7 @@ coverage.txt
 .claude/*
 !.claude/docs/
 .claude/docs/*
-# Binding manifest is tracked — the cross-check in trovery:adr-008 depends on it
+# Tracked: the binding manifest, and the repo-scope decision records.
+# Still ignored: views/, retros/, _site/, findings/ — generated or working artifacts.
 !.claude/docs/trove.yaml
+!.claude/docs/decisions/
