@@ -12,7 +12,7 @@ import (
 	"go.opentelemetry.io/otel/trace/noop"
 )
 
-const tracerName = "demigo-forge"
+const tracerName = "trovego-forge"
 
 // Config holds OTel configuration, typically parsed from agent.yaml otel: section.
 type Config struct {

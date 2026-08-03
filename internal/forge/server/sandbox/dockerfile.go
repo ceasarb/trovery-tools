@@ -13,11 +13,11 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 FROM python:3.13-slim
-RUN useradd -r -s /bin/false demi
+RUN useradd -r -s /bin/false trove
 WORKDIR /app
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 COPY . .
-USER demi
+USER trove
 `
 
 const pythonPyprojectDockerfile = `FROM python:3.13-slim
@@ -33,11 +33,11 @@ COPY package*.json .
 RUN npm ci --production
 
 FROM node:22-slim
-RUN useradd -r -s /bin/false demi
+RUN useradd -r -s /bin/false trove
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY . .
-USER demi
+USER trove
 `
 
 // Language represents the detected server language.
@@ -109,12 +109,12 @@ func pickPythonDockerfile(dir string) string {
 	return pythonPyprojectDockerfile
 }
 
-// WriteDockerfile writes a Dockerfile.demi to the given directory.
+// WriteDockerfile writes a Dockerfile.trove to the given directory.
 func WriteDockerfile(dir string, lang Language, serverCommand string) (string, error) {
 	content := GenerateDockerfileForDir(lang, serverCommand, dir)
-	path := filepath.Join(dir, "Dockerfile.demi")
+	path := filepath.Join(dir, "Dockerfile.trove")
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
-		return "", fmt.Errorf("write Dockerfile.demi: %w", err)
+		return "", fmt.Errorf("write Dockerfile.trove: %w", err)
 	}
 	return path, nil
 }

@@ -11,9 +11,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/dashboard"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/workspace"
+	"github.com/ceasarb/trovery-tools/internal/forge/dashboard"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/workspace"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +21,7 @@ var dashboardPort int
 
 var dashboardCmd = &cobra.Command{
 	Use:   "dashboard",
-	Short: "Start the Demigo Forge dashboard",
+	Short: "Start the Trovery Forge dashboard",
 	Long: console.HeaderStyle.Render("Dashboard") + "\n\n" +
 		"Launch the web dashboard for viewing servers, agents, evals, and sessions.",
 	RunE: runDashboard,
@@ -42,15 +42,15 @@ func runDashboard(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if ws == nil {
-		console.Error("Not inside an Demigo Forge workspace.")
-		console.Dim("Run 'demi forge init <name>' to create one, or cd into an existing workspace.")
+		console.Error("Not inside an Trovery Forge workspace.")
+		console.Dim("Run 'trove forge init <name>' to create one, or cd into an existing workspace.")
 		return fmt.Errorf("workspace not found")
 	}
 
-	// Ensure .demi/forge directory exists
-	demiDir := ws.Root + "/.demi/forge"
-	if err := os.MkdirAll(demiDir, 0o755); err != nil {
-		return fmt.Errorf("create .demi/forge directory: %w", err)
+	// Ensure .trove/forge directory exists
+	troveDir := ws.Root + "/.trove/forge"
+	if err := os.MkdirAll(troveDir, 0o755); err != nil {
+		return fmt.Errorf("create .trove/forge directory: %w", err)
 	}
 
 	srv, err := dashboard.New(dashboardPort, ws.Root)
@@ -59,7 +59,7 @@ func runDashboard(cmd *cobra.Command, args []string) error {
 	}
 
 	url := fmt.Sprintf("http://localhost:%d", dashboardPort)
-	console.Header("Demigo Forge Dashboard")
+	console.Header("Trovery Forge Dashboard")
 	console.Info(fmt.Sprintf("Serving at %s", url))
 	console.Dim("Press Ctrl+C to stop")
 

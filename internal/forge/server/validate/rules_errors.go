@@ -3,7 +3,7 @@ package validate
 import (
 	"strings"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 func errorRules() []Rule {

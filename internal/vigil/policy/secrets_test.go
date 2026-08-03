@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
 )
 
 func defaultSecretsPolicy() config.SecretsPolicy {

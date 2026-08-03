@@ -10,15 +10,15 @@ type PolicyResult struct {
 	Reason string
 }
 
-// VigilClient interfaces with the demi-vigil CLI for skill governance.
+// VigilClient interfaces with the trove-vigil CLI for skill governance.
 type VigilClient struct {
 	available bool
 }
 
-// DetectVigil checks if demi-vigil is installed and returns a client.
+// DetectVigil checks if trove-vigil is installed and returns a client.
 // Returns nil if Vigil is not available.
 func DetectVigil() *VigilClient {
-	_, err := exec.LookPath("demi-vigil")
+	_, err := exec.LookPath("trove-vigil")
 	if err != nil {
 		return nil
 	}
@@ -37,21 +37,21 @@ func (v *VigilClient) CheckPolicy(skillIdentity string) PolicyResult {
 		return PolicyResult{Status: "allowed", Reason: "vigil not installed"}
 	}
 
-	// Execute: demi-vigil skills check <identity>
-	cmd := exec.Command("demi-vigil", "skills", "check", skillIdentity)
+	// Execute: trove-vigil skills check <identity>
+	cmd := exec.Command("trove-vigil", "skills", "check", skillIdentity)
 	output, err := cmd.Output()
 	if err != nil {
-		// If demi-vigil returns non-zero, the skill is blocked
+		// If trove-vigil returns non-zero, the skill is blocked
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			return PolicyResult{
 				Status: "blocked",
 				Reason: string(exitErr.Stderr),
 			}
 		}
-		// If demi-vigil fails to run, allow by default (soft dependency)
+		// If trove-vigil fails to run, allow by default (soft dependency)
 		return PolicyResult{Status: "allowed", Reason: "vigil check failed, allowing by default"}
 	}
 
-	_ = output // demi-vigil outputs details, but for CRAWL we just care about exit code
+	_ = output // trove-vigil outputs details, but for CRAWL we just care about exit code
 	return PolicyResult{Status: "allowed", Reason: "vigil policy allows"}
 }

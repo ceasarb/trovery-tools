@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/provider"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
 )
 
 func writeAgentYAML(t *testing.T, dir, content string) {

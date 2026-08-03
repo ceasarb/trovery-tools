@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
 )
 
 // --- Suite YAML parsing ---

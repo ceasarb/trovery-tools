@@ -24,7 +24,7 @@ func TestRunPythonStdio(t *testing.T) {
 		"tests/__init__.py":             true,
 		"tests/fixtures/test_tools.yaml": true,
 		"README.md":                     true,
-		"demi.toml":                     true,
+		"trove.toml":                     true,
 	}
 
 	for _, f := range files {
@@ -53,7 +53,7 @@ func TestRunTypescriptStdio(t *testing.T) {
 		"src/server.ts":                  true,
 		"tests/fixtures/test_tools.yaml": true,
 		"README.md":                      true,
-		"demi.toml":                      true,
+		"trove.toml":                      true,
 	}
 
 	for _, f := range files {
@@ -75,14 +75,14 @@ func TestRunPythonHTTP(t *testing.T) {
 		t.Fatalf("Run: %v", err)
 	}
 
-	// Verify HTTP transport shows up in demi.toml
+	// Verify HTTP transport shows up in trove.toml
 	for _, f := range files {
-		if f.Path == "demi.toml" {
+		if f.Path == "trove.toml" {
 			if !strings.Contains(f.Content, `transport = "http"`) {
-				t.Error("demi.toml missing http transport")
+				t.Error("trove.toml missing http transport")
 			}
 			if !strings.Contains(f.Content, "port = 8000") {
-				t.Error("demi.toml missing port")
+				t.Error("trove.toml missing port")
 			}
 		}
 		if f.Path == "src/http_server/server.py" {
@@ -122,12 +122,12 @@ func TestRunTemplateContent(t *testing.T) {
 		}
 
 		// Check service name substitution
-		if f.Path == "demi.toml" {
+		if f.Path == "trove.toml" {
 			if !strings.Contains(f.Content, `name = "my-server"`) {
-				t.Errorf("demi.toml missing server name")
+				t.Errorf("trove.toml missing server name")
 			}
 			if !strings.Contains(f.Content, `command = "uv run my-server"`) {
-				t.Errorf("demi.toml missing correct command")
+				t.Errorf("trove.toml missing correct command")
 			}
 		}
 

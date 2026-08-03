@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 )
 
 // HandoffValidation holds the result of validating agent output against a schema.

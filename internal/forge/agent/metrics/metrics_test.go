@@ -75,16 +75,16 @@ func TestMetricsHandler(t *testing.T) {
 
 	// Verify all metric families appear
 	expectedMetrics := []string{
-		"demi_requests_total",
-		"demi_tool_calls_total",
-		"demi_tool_call_errors_total",
-		"demi_tokens_input_total",
-		"demi_tokens_output_total",
-		"demi_cost_usd_total",
-		"demi_request_duration_seconds",
-		"demi_tool_call_duration_seconds",
-		"demi_active_sessions",
-		"demi_budget_remaining_usd",
+		"trove_requests_total",
+		"trove_tool_calls_total",
+		"trove_tool_call_errors_total",
+		"trove_tokens_input_total",
+		"trove_tokens_output_total",
+		"trove_cost_usd_total",
+		"trove_request_duration_seconds",
+		"trove_tool_call_duration_seconds",
+		"trove_active_sessions",
+		"trove_budget_remaining_usd",
 	}
 
 	for _, metric := range expectedMetrics {
@@ -137,10 +137,10 @@ func TestRecordUsage(t *testing.T) {
 	output := string(body)
 
 	// Tokens should be accumulated (800 input, 300 output)
-	if !strings.Contains(output, "demi_tokens_input_total 800") {
+	if !strings.Contains(output, "trove_tokens_input_total 800") {
 		t.Errorf("expected tokens_input_total 800 in output")
 	}
-	if !strings.Contains(output, "demi_tokens_output_total 300") {
+	if !strings.Contains(output, "trove_tokens_output_total 300") {
 		t.Errorf("expected tokens_output_total 300 in output")
 	}
 }

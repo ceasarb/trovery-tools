@@ -1,7 +1,7 @@
 package provider
 
 import (
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 )
 
 // Message represents a conversation message.

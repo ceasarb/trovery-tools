@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
 )
 
 // ErrBudgetExceeded is returned when the per-request budget is hit.

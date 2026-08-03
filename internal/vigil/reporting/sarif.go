@@ -3,7 +3,7 @@ package reporting
 import (
 	"encoding/json"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
 )
 
 // SARIF 2.1.0 structures for GitHub Security tab integration.
@@ -124,8 +124,8 @@ func FormatSARIF(violations []session.PolicyViolation, version string) ([]byte, 
 			{
 				Tool: sarifTool{
 					Driver: sarifDriver{
-						Name:           "demigo-vigil",
-						InformationURI: "https://github.com/ceasarb/demigo-tools",
+						Name:           "trovery-vigil",
+						InformationURI: "https://github.com/ceasarb/trovery-tools",
 						Version:        version,
 						Rules:          rules,
 					},

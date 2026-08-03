@@ -69,7 +69,7 @@ func TestSaveAndLoad(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
-	// Create a mock server directory with demi.toml
+	// Create a mock server directory with trove.toml
 	serverDir := t.TempDir()
 	toml := `[server]
 name = "weather-api"
@@ -85,7 +85,7 @@ author = "Test Author"
 license = "MIT"
 min_mcp_version = "1.0"
 `
-	os.WriteFile(filepath.Join(serverDir, "demi.toml"), []byte(toml), 0o644)
+	os.WriteFile(filepath.Join(serverDir, "trove.toml"), []byte(toml), 0o644)
 
 	regPath := filepath.Join(t.TempDir(), "registry.json")
 	idx, _ := Load(regPath)
@@ -129,7 +129,7 @@ transport = "stdio"
 [registry]
 description = "Updated description"
 `
-	os.WriteFile(filepath.Join(serverDir, "demi.toml"), []byte(toml), 0o644)
+	os.WriteFile(filepath.Join(serverDir, "trove.toml"), []byte(toml), 0o644)
 
 	regPath := filepath.Join(t.TempDir(), "registry.json")
 	idx, _ := Load(regPath)
@@ -340,6 +340,6 @@ func TestPublishNoConfig(t *testing.T) {
 
 	_, err := idx.Publish(t.TempDir())
 	if err == nil {
-		t.Error("expected error for dir without demi.toml")
+		t.Error("expected error for dir without trove.toml")
 	}
 }

@@ -6,18 +6,18 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
 )
 
-// ForgeAdapter wraps Demigo Forge agent execution.
+// ForgeAdapter wraps Trovery Forge agent execution.
 // Requires agent_path in the tool config.
 type ForgeAdapter struct{}
 
 func (a *ForgeAdapter) Name() string { return "forge-agent" }
 
 func (a *ForgeAdapter) ResolveCommand(cfg config.ToolConfig) []string {
-	args := []string{"demi-forge", "agent", "chat"}
+	args := []string{"trove-forge", "agent", "chat"}
 	if cfg.AgentPath != "" {
 		args = append(args, cfg.AgentPath)
 	}
@@ -54,13 +54,13 @@ func (a *ForgeAdapter) Run(cfg config.ToolConfig, extraArgs []string) (*session.
 }
 
 func (a *ForgeAdapter) Validate() error {
-	_, err := exec.LookPath("demi-forge")
+	_, err := exec.LookPath("trove-forge")
 	if err != nil {
-		return fmt.Errorf("demi-forge (Demigo Forge) not found on PATH")
+		return fmt.Errorf("trove-forge (Trovery Forge) not found on PATH")
 	}
 	return nil
 }
 
 func (a *ForgeAdapter) InstallHint() string {
-	return "go install github.com/ceasarb/demigo-tools/cmd/demi-forge@latest"
+	return "go install github.com/ceasarb/trovery-tools/cmd/trove-forge@latest"
 }

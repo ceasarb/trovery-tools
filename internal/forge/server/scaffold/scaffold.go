@@ -3,7 +3,7 @@ package scaffold
 import (
 	"fmt"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/templates"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/templates"
 )
 
 // Language is the server programming language.

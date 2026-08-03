@@ -236,8 +236,8 @@ func TestGenerateDockerfilePythonWithRequirements(t *testing.T) {
 	if !strings.Contains(df, "requirements.txt") {
 		t.Error("Python Dockerfile should reference requirements.txt")
 	}
-	if !strings.Contains(df, "USER demi") {
-		t.Error("Dockerfile should set USER demi")
+	if !strings.Contains(df, "USER trove") {
+		t.Error("Dockerfile should set USER trove")
 	}
 }
 
@@ -250,8 +250,8 @@ func TestGenerateDockerfileTypeScript(t *testing.T) {
 	if !strings.Contains(df, "npm ci") {
 		t.Error("TypeScript Dockerfile should use npm ci")
 	}
-	if !strings.Contains(df, "USER demi") {
-		t.Error("Dockerfile should set USER demi")
+	if !strings.Contains(df, "USER trove") {
+		t.Error("Dockerfile should set USER trove")
 	}
 	if !strings.Contains(df, "index.js") {
 		t.Error("CMD should contain the server command")
@@ -272,8 +272,8 @@ func TestWriteDockerfile(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if filepath.Base(path) != "Dockerfile.demi" {
-		t.Errorf("expected Dockerfile.demi, got %s", filepath.Base(path))
+	if filepath.Base(path) != "Dockerfile.trove" {
+		t.Errorf("expected Dockerfile.trove, got %s", filepath.Base(path))
 	}
 
 	data, err := os.ReadFile(path)

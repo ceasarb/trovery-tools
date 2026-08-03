@@ -10,14 +10,14 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
-	"github.com/ceasarb/demigo-tools/internal/vigil/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/shared/console"
 )
 
 // Default directories to ignore during file watching.
 var defaultIgnoreDirs = []string{
 	".git",
-	".demi/vigil",
+	".trove/vigil",
 	"node_modules",
 	"__pycache__",
 	".next",

@@ -16,7 +16,7 @@ func GenerateFirewallScript(domains []string) string {
 	var b strings.Builder
 
 	b.WriteString("#!/bin/sh\n")
-	b.WriteString("# Demigo Forge domain allowlist firewall\n")
+	b.WriteString("# Trovery Forge domain allowlist firewall\n")
 	b.WriteString("# Auto-generated — do not edit\n\n")
 
 	// Allow loopback

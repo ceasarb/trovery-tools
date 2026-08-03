@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/guardrails"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/runtime"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/delegation"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/guardrails"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/delegation"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -150,16 +150,16 @@ func (s *Server) handleInvoke(w http.ResponseWriter, r *http.Request) {
 	if s.otel != nil {
 		span := trace.SpanFromContext(ctx)
 		span.SetAttributes(
-			attribute.Int("demi.tokens_in", sess.TotalInput),
-			attribute.Int("demi.tokens_out", sess.TotalOutput),
-			attribute.Int("demi.tool_calls", sess.ToolCalls),
-			attribute.Float64("demi.cost_usd", sess.EstimatedCost()),
+			attribute.Int("trove.tokens_in", sess.TotalInput),
+			attribute.Int("trove.tokens_out", sess.TotalOutput),
+			attribute.Int("trove.tool_calls", sess.ToolCalls),
+			attribute.Float64("trove.cost_usd", sess.EstimatedCost()),
 		)
 	}
 
 	setCostHeaders(w, sess)
 	if sess.BudgetStopped {
-		w.Header().Set("X-Demi-Budget-Exceeded", "true")
+		w.Header().Set("X-Trove-Budget-Exceeded", "true")
 	}
 
 	resp := InvokeResponse{
@@ -326,10 +326,10 @@ func (s *Server) applyOverrides(req *InvokeRequest) (*agentcfg.AgentConfig, erro
 
 // setCostHeaders writes cost-tracking headers to the response.
 func setCostHeaders(w http.ResponseWriter, sess *runtime.Session) {
-	w.Header().Set("X-Demi-Cost", fmt.Sprintf("%.6f", sess.EstimatedCost()))
-	w.Header().Set("X-Demi-Tokens-In", strconv.Itoa(sess.TotalInput))
-	w.Header().Set("X-Demi-Tokens-Out", strconv.Itoa(sess.TotalOutput))
-	w.Header().Set("X-Demi-Tool-Calls", strconv.Itoa(sess.ToolCalls))
+	w.Header().Set("X-Trove-Cost", fmt.Sprintf("%.6f", sess.EstimatedCost()))
+	w.Header().Set("X-Trove-Tokens-In", strconv.Itoa(sess.TotalInput))
+	w.Header().Set("X-Trove-Tokens-Out", strconv.Itoa(sess.TotalOutput))
+	w.Header().Set("X-Trove-Tool-Calls", strconv.Itoa(sess.ToolCalls))
 }
 
 // writeSSE writes a single SSE event to the response.
@@ -353,7 +353,7 @@ func (s *Server) checkMonthlyBudget(w http.ResponseWriter) bool {
 	}
 	remaining, err := s.budget.CheckMonthlyBudget()
 	if err == guardrails.ErrMonthlyCapReached {
-		w.Header().Set("X-Demi-Monthly-Remaining", "0.000000")
+		w.Header().Set("X-Trove-Monthly-Remaining", "0.000000")
 		writeJSONError(w, http.StatusTooManyRequests, "monthly budget cap reached")
 		return true
 	}
@@ -362,7 +362,7 @@ func (s *Server) checkMonthlyBudget(w http.ResponseWriter) bool {
 		return false
 	}
 	if remaining > 0 {
-		w.Header().Set("X-Demi-Monthly-Remaining", fmt.Sprintf("%.6f", remaining))
+		w.Header().Set("X-Trove-Monthly-Remaining", fmt.Sprintf("%.6f", remaining))
 	}
 	return false
 }

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/server/harness"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
 )
 
 type toolListItem struct {
@@ -125,7 +125,7 @@ func (s *Server) handleCallTool(w http.ResponseWriter, r *http.Request) {
 // findServerConfig locates a server by name in the workspace servers/ directory.
 func (s *Server) findServerConfig(name string) (*config.ServerConfig, string, error) {
 	serversDir := filepath.Join(s.workDir, "servers")
-	entries, err := filepath.Glob(filepath.Join(serversDir, "*", "demi.toml"))
+	entries, err := filepath.Glob(filepath.Join(serversDir, "*", "trove.toml"))
 	if err != nil {
 		return nil, "", err
 	}

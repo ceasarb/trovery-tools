@@ -18,7 +18,7 @@ transport = "stdio"
 [testing]
 fixtures = "tests/fixtures"
 `
-	os.WriteFile(filepath.Join(dir, "demi.toml"), []byte(toml), 0o644)
+	os.WriteFile(filepath.Join(dir, "trove.toml"), []byte(toml), 0o644)
 
 	cfg, err := LoadServerConfig(dir)
 	if err != nil {
@@ -51,7 +51,7 @@ port = 8000
 [testing]
 fixtures = "tests/fixtures"
 `
-	os.WriteFile(filepath.Join(dir, "demi.toml"), []byte(toml), 0o644)
+	os.WriteFile(filepath.Join(dir, "trove.toml"), []byte(toml), 0o644)
 
 	cfg, err := LoadServerConfig(dir)
 	if err != nil {
@@ -66,13 +66,13 @@ fixtures = "tests/fixtures"
 func TestLoadServerConfigMissing(t *testing.T) {
 	_, err := LoadServerConfig(t.TempDir())
 	if err == nil {
-		t.Error("expected error for missing demi.toml")
+		t.Error("expected error for missing trove.toml")
 	}
 }
 
 func TestLoadServerConfigInvalid(t *testing.T) {
 	dir := t.TempDir()
-	os.WriteFile(filepath.Join(dir, "demi.toml"), []byte("{{invalid toml"), 0o644)
+	os.WriteFile(filepath.Join(dir, "trove.toml"), []byte("{{invalid toml"), 0o644)
 
 	_, err := LoadServerConfig(dir)
 	if err == nil {

@@ -3,7 +3,7 @@ package runtime
 import (
 	"testing"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 )
 
 func TestEstimatedCostHaiku(t *testing.T) {

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/server/sandbox"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/container"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/sandbox"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/container"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +22,7 @@ var serverSandboxCmd = &cobra.Command{
 	Short: "Run server in a sandboxed container",
 	Long: "Build and run the current MCP server in an isolated container with\n" +
 		"configurable security policies (strict, standard, permissive).\n\n" +
-		"Must be run from inside a server directory (contains demi.toml).",
+		"Must be run from inside a server directory (contains trove.toml).",
 	RunE: runServerSandbox,
 }
 
@@ -35,7 +35,7 @@ func runServerSandbox(cmd *cobra.Command, args []string) error {
 	// Load server config
 	cfg, err := config.LoadServerConfig(cwd)
 	if err != nil {
-		console.Error(fmt.Sprintf("No demi.toml found: %v", err))
+		console.Error(fmt.Sprintf("No trove.toml found: %v", err))
 		console.Dim("  Run this command from inside a server directory")
 		return err
 	}

@@ -7,7 +7,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/delegation"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/delegation"
 )
 
 // newPipedClient wires a Client to an in-memory fake MCP server so CallTool

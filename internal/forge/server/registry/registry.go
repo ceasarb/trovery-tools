@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
 )
 
 // Entry represents a single server in the registry index.
@@ -28,19 +28,19 @@ type Entry struct {
 	PublishedAt   string   `json:"published_at"`
 }
 
-// Index is the local registry index stored at ~/.demi/forge/registry.json.
+// Index is the local registry index stored at ~/.trove/forge/registry.json.
 type Index struct {
 	Servers []Entry `json:"servers"`
 	path    string
 }
 
-// DefaultPath returns the default registry index path (~/.demi/forge/registry.json).
+// DefaultPath returns the default registry index path (~/.trove/forge/registry.json).
 func DefaultPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("user home dir: %w", err)
 	}
-	return filepath.Join(home, ".demi/forge", "registry.json"), nil
+	return filepath.Join(home, ".trove/forge", "registry.json"), nil
 }
 
 // Load reads the registry index from disk. Returns an empty index if the file doesn't exist.
@@ -77,7 +77,7 @@ func (idx *Index) Save() error {
 	return os.WriteFile(idx.path, data, 0o644)
 }
 
-// Publish adds or updates a server entry in the index from its demi.toml config.
+// Publish adds or updates a server entry in the index from its trove.toml config.
 func (idx *Index) Publish(serverDir string) (*Entry, error) {
 	cfg, err := config.LoadServerConfig(serverDir)
 	if err != nil {

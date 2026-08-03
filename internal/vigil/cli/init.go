@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
-	"github.com/ceasarb/demigo-tools/internal/vigil/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/shared/console"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,7 @@ var (
 
 func init() {
 	initCmd.Flags().StringVarP(&initTemplate, "template", "t", "default", "Config template: default, python, typescript")
-	initCmd.Flags().BoolVar(&initForce, "force", false, "Overwrite existing .demi/vigil.yaml")
+	initCmd.Flags().BoolVar(&initForce, "force", false, "Overwrite existing .trove/vigil.yaml")
 	initCmd.Flags().BoolVar(&initCI, "ci", false, "Generate GitHub Actions workflow")
 	rootCmd.AddCommand(initCmd)
 }
@@ -44,11 +44,11 @@ func runInit(cmd *cobra.Command, args []string) error {
 		name = filepath.Base(cwd)
 	}
 
-	configPath := ".demi/vigil.yaml"
+	configPath := ".trove/vigil.yaml"
 
 	// Check if config already exists.
 	if _, err := os.Stat(configPath); err == nil && !initForce {
-		return fmt.Errorf(".demi/vigil.yaml already exists — use --force to overwrite")
+		return fmt.Errorf(".trove/vigil.yaml already exists — use --force to overwrite")
 	}
 
 	// Render template.
@@ -57,21 +57,21 @@ func runInit(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Write .demi/vigil.yaml (create the .demi/ dir first — WriteFile won't).
+	// Write .trove/vigil.yaml (create the .trove/ dir first — WriteFile won't).
 	if err := os.MkdirAll(filepath.Dir(configPath), 0o755); err != nil {
-		return fmt.Errorf("creating .demi/ directory: %w", err)
+		return fmt.Errorf("creating .trove/ directory: %w", err)
 	}
 	if err := os.WriteFile(configPath, content, 0644); err != nil {
-		return fmt.Errorf("writing .demi/vigil.yaml: %w", err)
+		return fmt.Errorf("writing .trove/vigil.yaml: %w", err)
 	}
-	console.Success("Created .demi/vigil.yaml")
+	console.Success("Created .trove/vigil.yaml")
 
-	// Create .demi/vigil/sessions/ directory.
-	sessionsDir := filepath.Join(".demi/vigil", "sessions")
+	// Create .trove/vigil/sessions/ directory.
+	sessionsDir := filepath.Join(".trove/vigil", "sessions")
 	if err := os.MkdirAll(sessionsDir, 0755); err != nil {
 		return fmt.Errorf("creating sessions directory: %w", err)
 	}
-	console.Success("Created .demi/vigil/sessions/")
+	console.Success("Created .trove/vigil/sessions/")
 
 	// Append to .gitignore.
 	if err := appendGitignore(); err != nil {
@@ -92,13 +92,13 @@ func runInit(cmd *cobra.Command, args []string) error {
 	console.Dim(fmt.Sprintf("  Project: %s", name))
 	console.Dim(fmt.Sprintf("  Template: %s", initTemplate))
 	fmt.Println()
-	console.Dim("  Next: demi vigil start")
+	console.Dim("  Next: trove vigil start")
 
 	return nil
 }
 
 func appendGitignore() error {
-	const marker = ".demi/vigil/"
+	const marker = ".trove/vigil/"
 	path := ".gitignore"
 
 	// Read existing content.
@@ -118,7 +118,7 @@ func appendGitignore() error {
 	}
 	defer f.Close()
 
-	entry := "\n# Demigo Vigil session data\n.demi/vigil/\n"
+	entry := "\n# Trovery Vigil session data\n.trove/vigil/\n"
 	if len(existing) > 0 && !strings.HasSuffix(string(existing), "\n") {
 		entry = "\n" + entry
 	}
@@ -133,7 +133,7 @@ func generateCIWorkflow() error {
 		return fmt.Errorf("creating workflows directory: %w", err)
 	}
 
-	workflow := `name: Demigo Vigil Audit
+	workflow := `name: Trovery Vigil Audit
 on: [pull_request]
 
 jobs:
@@ -146,12 +146,12 @@ jobs:
 
       - name: Install Vigil
         run: |
-          curl -sSfL https://github.com/ceasarb/demigo-tools/releases/latest/download/demi-vigil-linux-amd64 -o /usr/local/bin/demi-vigil
-          chmod +x /usr/local/bin/demi-vigil
+          curl -sSfL https://github.com/ceasarb/trovery-tools/releases/latest/download/trove-vigil-linux-amd64 -o /usr/local/bin/trove-vigil
+          chmod +x /usr/local/bin/trove-vigil
 
       - name: Audit PR changes
         run: |
-          demi-vigil audit --ci \
+          trove-vigil audit --ci \
             --base-ref ${{ github.event.pull_request.base.sha }} \
             --head-ref ${{ github.event.pull_request.head.sha }} \
             --format sarif \

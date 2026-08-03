@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
 )
 
 type serverListItem struct {
@@ -26,7 +26,7 @@ type serverDetail struct {
 	Fixtures  string              `json:"fixtures,omitempty"`
 }
 
-// handleListServers scans the workspace servers/ directory for demi.toml files.
+// handleListServers scans the workspace servers/ directory for trove.toml files.
 func (s *Server) handleListServers(w http.ResponseWriter, r *http.Request) {
 	serversDir := filepath.Join(s.workDir, "servers")
 	entries, err := os.ReadDir(serversDir)
@@ -47,7 +47,7 @@ func (s *Server) handleListServers(w http.ResponseWriter, r *http.Request) {
 		dir := filepath.Join(serversDir, e.Name())
 		cfg, err := config.LoadServerConfig(dir)
 		if err != nil {
-			continue // skip directories without valid demi.toml
+			continue // skip directories without valid trove.toml
 		}
 		items = append(items, serverListItem{
 			Name:      cfg.Server.Name,

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 // helper to run a single rule against a tool and return violations

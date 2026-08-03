@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/server/harness"
-	"github.com/ceasarb/demigo-tools/internal/forge/server/validate"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/validate"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +34,7 @@ func runServerValidate(cmd *cobra.Command, args []string) error {
 	// Load server config
 	cfg, err := config.LoadServerConfig(cwd)
 	if err != nil {
-		console.Error(fmt.Sprintf("No demi.toml found: %v", err))
+		console.Error(fmt.Sprintf("No trove.toml found: %v", err))
 		console.Dim("  Run this command from inside a server directory")
 		return err
 	}
@@ -45,7 +45,7 @@ func runServerValidate(cmd *cobra.Command, args []string) error {
 	// Parse command
 	parts := strings.Fields(cfg.Server.Command)
 	if len(parts) == 0 {
-		return fmt.Errorf("empty server command in demi.toml")
+		return fmt.Errorf("empty server command in trove.toml")
 	}
 
 	// Start server

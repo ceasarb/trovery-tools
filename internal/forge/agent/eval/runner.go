@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/provider"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
 )
 
 // ScenarioResult holds the outcome of running a single scenario.

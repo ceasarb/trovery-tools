@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/deploy"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/deploy"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
 	"github.com/spf13/cobra"
 )
 

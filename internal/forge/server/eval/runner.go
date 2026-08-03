@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/server/harness"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 // ScenarioResult holds the outcome of running a single scenario.

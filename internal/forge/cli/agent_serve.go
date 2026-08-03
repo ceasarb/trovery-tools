@@ -9,19 +9,19 @@ import (
 	"path/filepath"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/guardrails"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/httpserver"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/metrics"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/runtime"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
-	"github.com/ceasarb/demigo-tools/internal/forge/server/sandbox"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/auth"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/container"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/env"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/logging"
-	forgeotel "github.com/ceasarb/demigo-tools/internal/forge/shared/otel"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/guardrails"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/httpserver"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/metrics"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/sandbox"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/auth"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/container"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/env"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/logging"
+	forgeotel "github.com/ceasarb/trovery-tools/internal/forge/shared/otel"
 	"github.com/spf13/cobra"
 )
 
@@ -358,9 +358,9 @@ func initBudget(cfg *agentcfg.AgentConfig) (*guardrails.Budget, func(), error) {
 	var store *guardrails.CostStore
 	var ledger guardrails.Ledger
 	if monthly > 0 {
-		demiDir := ".demi/forge"
-		os.MkdirAll(demiDir, 0o755)
-		dbPath := filepath.Join(demiDir, "cost.db")
+		troveDir := ".trove/forge"
+		os.MkdirAll(troveDir, 0o755)
+		dbPath := filepath.Join(troveDir, "cost.db")
 		opened, err := guardrails.NewCostStore(dbPath)
 		if err != nil {
 			console.Warning(fmt.Sprintf("Cost tracking unavailable — monthly cap will not be enforced: %v", err))

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/workspace"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/workspace"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +13,7 @@ var noServers bool
 
 var initCmd = &cobra.Command{
 	Use:   "init [name]",
-	Short: "Create a new Demigo Forge workspace",
+	Short: "Create a new Trovery Forge workspace",
 	Args:  cobra.ExactArgs(1),
 	RunE:  runInit,
 }
@@ -41,7 +41,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 	fmt.Println()
 
 	console.Dim("  " + name + "/")
-	console.Dim("  ├── .demi/forge.yaml")
+	console.Dim("  ├── .trove/forge.yaml")
 	console.Dim("  ├── agents/")
 	if !noServers {
 		console.Dim("  ├── servers/")
@@ -53,9 +53,9 @@ func runInit(cmd *cobra.Command, args []string) error {
 	console.Info("Next steps:")
 	console.Dim("  cd " + name)
 	if !noServers {
-		console.Dim("  demi forge server create")
+		console.Dim("  trove forge server create")
 	}
-	console.Dim("  demi forge agent create")
+	console.Dim("  trove forge agent create")
 
 	return nil
 }

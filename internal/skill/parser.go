@@ -85,20 +85,25 @@ func parseFrontmatterAndBody(content string) (*Skill, error) {
 	return s, nil
 }
 
-// resolveMetadata fills Namespace and Version from the demi.* metadata keys,
-// then the legacy tandem.* keys, then the legacy top-level values — in that
-// precedence order, each used only when the higher-priority source is absent (ADR-003).
+// resolveMetadata fills Namespace and Version from the trove.* metadata keys,
+// then each legacy prefix newest-first (demi.*, then tandem.*), then the legacy
+// top-level values — in that precedence order, each used only when every
+// higher-priority source is absent (ADR-003).
 func (s *Skill) resolveMetadata(legacyNamespace, legacyVersion string) {
-	s.Namespace = legacyNamespace
-	s.Version = legacyVersion
-	if v := s.Metadata[MetaNamespace]; v != "" {
-		s.Namespace = v
-	} else if v := s.Metadata[legacyMetaNamespace]; v != "" {
-		s.Namespace = v
+	s.Namespace = firstNonEmpty(s.Metadata, MetaNamespace, legacyMetaNamespace, legacyNamespace)
+	s.Version = firstNonEmpty(s.Metadata, MetaVersion, legacyMetaVersion, legacyVersion)
+}
+
+// firstNonEmpty returns the value of the current key, else the first legacy key
+// that resolves, else the supplied fallback.
+func firstNonEmpty(meta map[string]string, current string, legacy []string, fallback string) string {
+	if v := meta[current]; v != "" {
+		return v
 	}
-	if v := s.Metadata[MetaVersion]; v != "" {
-		s.Version = v
-	} else if v := s.Metadata[legacyMetaVersion]; v != "" {
-		s.Version = v
+	for _, k := range legacy {
+		if v := meta[k]; v != "" {
+			return v
+		}
 	}
+	return fallback
 }

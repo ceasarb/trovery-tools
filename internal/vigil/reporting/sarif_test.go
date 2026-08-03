@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
 )
 
 func TestFormatSARIF_Basic(t *testing.T) {
@@ -43,7 +43,7 @@ func TestFormatSARIF_Basic(t *testing.T) {
 	if !strings.Contains(output, `"version": "1.2.3"`) {
 		t.Error("expected driver version to reflect the build version passed in")
 	}
-	if !strings.Contains(output, `"demigo-vigil"`) {
+	if !strings.Contains(output, `"trovery-vigil"`) {
 		t.Error("expected tool name")
 	}
 	if !strings.Contains(output, "config.go") {

@@ -1,4 +1,4 @@
-// Package palette provides the Palette tool provider for Demigo agents.
+// Package palette provides the Palette tool provider for Trovery agents.
 // It wraps the Go WebSocket client as MCP tools so the LLM can render UI
 // components in the Palette Viewer via standard tool calls.
 package palette
@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"time"
 
-	paletteclient "github.com/ceasarb/demigo-tools/internal/forge/palette/go-client"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	paletteclient "github.com/ceasarb/trovery-tools/internal/forge/palette/go-client"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 // ToolProvider wraps a Palette WebSocket client as MCP tools.

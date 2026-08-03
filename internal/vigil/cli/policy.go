@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
-	"github.com/ceasarb/demigo-tools/internal/vigil/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/shared/console"
 	"github.com/spf13/cobra"
 )
 

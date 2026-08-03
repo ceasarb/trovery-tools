@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 // parsedSchema is used internally to inspect input schema fields.

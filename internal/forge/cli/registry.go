@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/server/registry"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/registry"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
 	"github.com/spf13/cobra"
 )
 
@@ -44,7 +44,7 @@ func runRegistrySearch(cmd *cobra.Command, args []string) error {
 		if query != "" {
 			console.Info(fmt.Sprintf("No servers found matching %q", query))
 		} else {
-			console.Info("Registry is empty. Run: demi forge server registry publish")
+			console.Info("Registry is empty. Run: trove forge server registry publish")
 		}
 		return nil
 	}

@@ -3,7 +3,7 @@ package servermgr
 import (
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/server/sandbox"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/sandbox"
 )
 
 func TestBuildRunArgs_StrictPolicy(t *testing.T) {
@@ -16,7 +16,7 @@ func TestBuildRunArgs_StrictPolicy(t *testing.T) {
 		PidsLimit: 50,
 	}
 
-	args := buildRunArgs("docker", "demi-forge-serve-weather", "weather", policy)
+	args := buildRunArgs("docker", "trove-forge-serve-weather", "weather", policy)
 
 	assertContains(t, args, "run")
 	assertContains(t, args, "-i")
@@ -31,7 +31,7 @@ func TestBuildRunArgs_StrictPolicy(t *testing.T) {
 	assertNotContains(t, args, "--cap-add=NET_ADMIN")
 
 	// Image tag should be last
-	if args[len(args)-1] != "demi-forge-serve-weather" {
+	if args[len(args)-1] != "trove-forge-serve-weather" {
 		t.Errorf("image tag should be last argument, got %s", args[len(args)-1])
 	}
 }
@@ -46,7 +46,7 @@ func TestBuildRunArgs_StandardPolicy(t *testing.T) {
 		PidsLimit: 100,
 	}
 
-	args := buildRunArgs("docker", "demi-forge-serve-api", "api", policy)
+	args := buildRunArgs("docker", "trove-forge-serve-api", "api", policy)
 
 	assertContains(t, args, "--memory=512m")
 	assertContains(t, args, "--cpus=1.0")
@@ -66,7 +66,7 @@ func TestBuildRunArgs_DomainFilterPolicy(t *testing.T) {
 		PidsLimit: 100,
 	}
 
-	args := buildRunArgs("docker", "demi-forge-serve-api", "api", policy)
+	args := buildRunArgs("docker", "trove-forge-serve-api", "api", policy)
 
 	// Domain filtering requires NET_ADMIN for iptables
 	assertContains(t, args, "--cap-add=NET_ADMIN")
@@ -81,7 +81,7 @@ func TestBuildRunArgs_ReadOnlyWithTmpfs(t *testing.T) {
 		CPUs:     0.5,
 	}
 
-	args := buildRunArgs("docker", "demi-forge-serve-test", "test", policy)
+	args := buildRunArgs("docker", "trove-forge-serve-test", "test", policy)
 
 	assertContains(t, args, "--read-only")
 	assertContains(t, args, "--tmpfs")

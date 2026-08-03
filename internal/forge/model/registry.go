@@ -18,7 +18,7 @@ type ModelEntry struct {
 	LastUsed   time.Time `json:"last_used,omitempty"`
 }
 
-// Registry manages the local model registry stored at ~/.demi/forge/models.json.
+// Registry manages the local model registry stored at ~/.trove/forge/models.json.
 type Registry struct {
 	Models []ModelEntry `json:"models"`
 	path   string
@@ -33,10 +33,10 @@ func defaultRegistryPath() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("get home dir: %w", err)
 	}
-	return filepath.Join(home, ".demi/forge", "models.json"), nil
+	return filepath.Join(home, ".trove/forge", "models.json"), nil
 }
 
-// LoadRegistry reads the registry from ~/.demi/forge/models.json.
+// LoadRegistry reads the registry from ~/.trove/forge/models.json.
 // If the file does not exist, it returns an empty registry.
 func LoadRegistry() (*Registry, error) {
 	p, err := registryPath()

@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/deploy"
-	agentruntime "github.com/ceasarb/demigo-tools/internal/forge/agent/runtime"
-	"github.com/ceasarb/demigo-tools/internal/forge/server/scaffold"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/templates"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/deploy"
+	agentruntime "github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/scaffold"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/templates"
 )
 
 // --- CLI Startup Benchmark ---
@@ -24,8 +24,8 @@ import (
 
 func BenchmarkCLIStartup(b *testing.B) {
 	// Build the binary first
-	binPath := filepath.Join(b.TempDir(), "demi-forge")
-	build := exec.Command("go", "build", "-o", binPath, "github.com/ceasarb/demigo-tools/cmd/demi-forge")
+	binPath := filepath.Join(b.TempDir(), "trove-forge")
+	build := exec.Command("go", "build", "-o", binPath, "github.com/ceasarb/trovery-tools/cmd/trove-forge")
 	if out, err := build.CombinedOutput(); err != nil {
 		b.Fatalf("build: %v\n%s", err, out)
 	}
@@ -247,8 +247,8 @@ func TestBinarySizeUnder50MB(t *testing.T) {
 		t.Skip("skipping binary size check in short mode")
 	}
 
-	binPath := filepath.Join(t.TempDir(), "demi-forge")
-	build := exec.Command("go", "build", "-ldflags=-s -w", "-o", binPath, "github.com/ceasarb/demigo-tools/cmd/demi-forge")
+	binPath := filepath.Join(t.TempDir(), "trove-forge")
+	build := exec.Command("go", "build", "-ldflags=-s -w", "-o", binPath, "github.com/ceasarb/trovery-tools/cmd/trove-forge")
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("build: %v\n%s", err, out)
 	}
@@ -273,8 +273,8 @@ func TestCLIStartupUnder100ms(t *testing.T) {
 		t.Skip("skipping startup time check in short mode")
 	}
 
-	binPath := filepath.Join(t.TempDir(), "demi-forge")
-	build := exec.Command("go", "build", "-o", binPath, "github.com/ceasarb/demigo-tools/cmd/demi-forge")
+	binPath := filepath.Join(t.TempDir(), "trove-forge")
+	build := exec.Command("go", "build", "-o", binPath, "github.com/ceasarb/trovery-tools/cmd/trove-forge")
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("build: %v\n%s", err, out)
 	}

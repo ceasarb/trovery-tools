@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/session"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/session"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
 )
 
 // Integration tests covering the full CRAWL workflow.
@@ -20,13 +20,13 @@ var binaryPath string
 
 func TestMain(m *testing.M) {
 	// Build the binary once for all integration tests
-	dir, err := os.MkdirTemp("", "demi-forge-integration-*")
+	dir, err := os.MkdirTemp("", "trove-forge-integration-*")
 	if err != nil {
 		panic(err)
 	}
-	binaryPath = filepath.Join(dir, "demi-forge")
+	binaryPath = filepath.Join(dir, "trove-forge")
 
-	cmd := exec.Command("go", "build", "-o", binaryPath, "./cmd/demi-forge")
+	cmd := exec.Command("go", "build", "-o", binaryPath, "./cmd/trove-forge")
 	cmd.Dir = findRepoRoot()
 	if out, err := cmd.CombinedOutput(); err != nil {
 		panic("build failed: " + string(out))
@@ -57,7 +57,7 @@ func runAjnt(t *testing.T, dir string, args ...string) string {
 	cmd.Dir = dir
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("demi-forge %s failed: %v\n%s", strings.Join(args, " "), err, string(out))
+		t.Fatalf("trove-forge %s failed: %v\n%s", strings.Join(args, " "), err, string(out))
 	}
 	return string(out)
 }
@@ -74,7 +74,7 @@ func runAjntExpectFail(t *testing.T, dir string, args ...string) string {
 
 func TestIntegrationVersion(t *testing.T) {
 	out := runAjnt(t, t.TempDir(), "--version")
-	if !strings.Contains(out, "Demigo Forge") {
+	if !strings.Contains(out, "Trovery Forge") {
 		t.Errorf("version output missing brand: %s", out)
 	}
 }
@@ -89,7 +89,7 @@ func TestIntegrationInitWorkspace(t *testing.T) {
 	}
 
 	// Verify structure
-	for _, f := range []string{".demi/forge.yaml", "agents", "servers", "README.md", ".gitignore"} {
+	for _, f := range []string{".trove/forge.yaml", "agents", "servers", "README.md", ".gitignore"} {
 		if _, err := os.Stat(filepath.Join(wsDir, f)); err != nil {
 			t.Errorf("missing %s: %v", f, err)
 		}
@@ -123,7 +123,7 @@ func TestIntegrationServerCreate(t *testing.T) {
 	}
 
 	serverDir := filepath.Join(wsDir, "servers", "weather")
-	for _, f := range []string{"demi.toml", "pyproject.toml", "src/weather/server.py"} {
+	for _, f := range []string{"trove.toml", "pyproject.toml", "src/weather/server.py"} {
 		if _, err := os.Stat(filepath.Join(serverDir, f)); err != nil {
 			t.Errorf("missing %s: %v", f, err)
 		}
@@ -142,7 +142,7 @@ func TestIntegrationServerCreateTypescript(t *testing.T) {
 	}
 
 	serverDir := filepath.Join(wsDir, "servers", "api")
-	for _, f := range []string{"demi.toml", "package.json", "tsconfig.json", "src/server.ts"} {
+	for _, f := range []string{"trove.toml", "package.json", "tsconfig.json", "src/server.ts"} {
 		if _, err := os.Stat(filepath.Join(serverDir, f)); err != nil {
 			t.Errorf("missing %s: %v", f, err)
 		}
@@ -299,10 +299,10 @@ func TestServerLifecycle(t *testing.T) {
 
 	serverDir := filepath.Join(wsDir, "servers", "notes")
 
-	// Verify demi.toml exists and is loadable
-	tomlPath := filepath.Join(serverDir, "demi.toml")
+	// Verify trove.toml exists and is loadable
+	tomlPath := filepath.Join(serverDir, "trove.toml")
 	if _, err := os.Stat(tomlPath); err != nil {
-		t.Fatalf("missing demi.toml: %v", err)
+		t.Fatalf("missing trove.toml: %v", err)
 	}
 
 	// Verify test fixtures exist
@@ -321,7 +321,7 @@ func TestServerLifecycle(t *testing.T) {
 	runAjnt(t, wsDir, "server", "create", "--name", "calendar", "--language", "typescript", "--transport", "stdio")
 
 	calDir := filepath.Join(wsDir, "servers", "calendar")
-	for _, f := range []string{"demi.toml", "package.json", "src/server.ts"} {
+	for _, f := range []string{"trove.toml", "package.json", "src/server.ts"} {
 		if _, err := os.Stat(filepath.Join(calDir, f)); err != nil {
 			t.Errorf("calendar server missing %s: %v", f, err)
 		}

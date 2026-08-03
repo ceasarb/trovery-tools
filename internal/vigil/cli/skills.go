@@ -3,9 +3,9 @@ package cli
 import (
 	"fmt"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/policy"
-	"github.com/ceasarb/demigo-tools/internal/vigil/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/vigil/skills"
+	"github.com/ceasarb/trovery-tools/internal/vigil/policy"
+	"github.com/ceasarb/trovery-tools/internal/vigil/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/vigil/skills"
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +40,7 @@ func runSkillsScan(cmd *cobra.Command, args []string) error {
 
 	paths := cfg.Skills.ScanPaths
 	if len(paths) == 0 {
-		console.Dim("No skill scan paths configured in .demi/vigil.yaml.")
+		console.Dim("No skill scan paths configured in .trove/vigil.yaml.")
 		return nil
 	}
 

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
 )
 
 // testServer creates a dashboard Server backed by a temp workspace with
@@ -20,18 +20,18 @@ func testServer(t *testing.T) *Server {
 	dir := t.TempDir()
 
 	// Create workspace structure
-	demiDir := filepath.Join(dir, ".demi/forge")
-	os.MkdirAll(demiDir, 0o755)
+	troveDir := filepath.Join(dir, ".trove/forge")
+	os.MkdirAll(troveDir, 0o755)
 	os.MkdirAll(filepath.Join(dir, "servers", "my-server"), 0o755)
 	os.MkdirAll(filepath.Join(dir, "agents", "my-agent"), 0o755)
 
-	// Write .demi/forge.yaml
-	os.WriteFile(filepath.Join(dir, ".demi/forge.yaml"), []byte(`[workspace]
+	// Write .trove/forge.yaml
+	os.WriteFile(filepath.Join(dir, ".trove/forge.yaml"), []byte(`[workspace]
 name = "test-workspace"
 `), 0o644)
 
 	// Write server config
-	os.WriteFile(filepath.Join(dir, "servers", "my-server", "demi.toml"), []byte(`[server]
+	os.WriteFile(filepath.Join(dir, "servers", "my-server", "trove.toml"), []byte(`[server]
 name = "my-server"
 entry = "main.py"
 command = "python main.py"
@@ -60,7 +60,7 @@ settings:
 `), 0o644)
 
 	// Populate eval store
-	evalStore, err := storage.NewEvalStore(filepath.Join(demiDir, "evals.db"))
+	evalStore, err := storage.NewEvalStore(filepath.Join(troveDir, "evals.db"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,7 +112,7 @@ settings:
 	evalStore.Close()
 
 	// Populate session store
-	sessStore, err := storage.NewSessionStore(filepath.Join(demiDir, "sessions.db"))
+	sessStore, err := storage.NewSessionStore(filepath.Join(troveDir, "sessions.db"))
 	if err != nil {
 		t.Fatal(err)
 	}

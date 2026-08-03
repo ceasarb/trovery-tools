@@ -28,7 +28,7 @@ const grafanaDashboardTmpl = `{
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "targets": [
         {
-          "expr": "rate(demi_requests_total[5m])",
+          "expr": "rate(trove_requests_total[5m])",
           "legendFormat": "{{ "{{" }}endpoint{{ "}}" }} {{ "{{" }}status{{ "}}" }}"
         }
       ]
@@ -39,7 +39,7 @@ const grafanaDashboardTmpl = `{
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, rate(demi_request_duration_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.95, rate(trove_request_duration_seconds_bucket[5m]))",
           "legendFormat": "p95 {{ "{{" }}endpoint{{ "}}" }}"
         }
       ]
@@ -49,7 +49,7 @@ const grafanaDashboardTmpl = `{
       "type": "gauge",
       "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
       "targets": [
-        { "expr": "demi_active_sessions" }
+        { "expr": "trove_active_sessions" }
       ]
     },
     {
@@ -57,7 +57,7 @@ const grafanaDashboardTmpl = `{
       "type": "gauge",
       "gridPos": { "h": 4, "w": 6, "x": 6, "y": 8 },
       "targets": [
-        { "expr": "demi_budget_remaining_usd" }
+        { "expr": "trove_budget_remaining_usd" }
       ]
     },
     {
@@ -65,7 +65,7 @@ const grafanaDashboardTmpl = `{
       "type": "stat",
       "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
       "targets": [
-        { "expr": "demi_cost_usd_total" }
+        { "expr": "trove_cost_usd_total" }
       ]
     },
     {
@@ -73,8 +73,8 @@ const grafanaDashboardTmpl = `{
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
       "targets": [
-        { "expr": "rate(demi_tool_calls_total[5m])", "legendFormat": "calls" },
-        { "expr": "rate(demi_tool_call_errors_total[5m])", "legendFormat": "errors" }
+        { "expr": "rate(trove_tool_calls_total[5m])", "legendFormat": "calls" },
+        { "expr": "rate(trove_tool_call_errors_total[5m])", "legendFormat": "errors" }
       ]
     },
     {
@@ -82,8 +82,8 @@ const grafanaDashboardTmpl = `{
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
       "targets": [
-        { "expr": "rate(demi_tokens_input_total[5m])", "legendFormat": "input" },
-        { "expr": "rate(demi_tokens_output_total[5m])", "legendFormat": "output" }
+        { "expr": "rate(trove_tokens_input_total[5m])", "legendFormat": "input" },
+        { "expr": "rate(trove_tokens_output_total[5m])", "legendFormat": "output" }
       ]
     },
     {
@@ -92,7 +92,7 @@ const grafanaDashboardTmpl = `{
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, rate(demi_tool_call_duration_seconds_bucket[5m]))",
+          "expr": "histogram_quantile(0.95, rate(trove_tool_call_duration_seconds_bucket[5m]))",
           "legendFormat": "p95"
         }
       ]
@@ -102,12 +102,12 @@ const grafanaDashboardTmpl = `{
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
       "targets": [
-        { "expr": "rate(demi_cost_usd_total[5m]) * 60", "legendFormat": "$/min" }
+        { "expr": "rate(trove_cost_usd_total[5m]) * 60", "legendFormat": "$/min" }
       ]
     }
   ],
   "schemaVersion": 39,
-  "tags": ["demigo", "agent"],
+  "tags": ["trovego", "agent"],
   "templating": { "list": [] },
   "time": { "from": "now-1h", "to": "now" },
   "title": "{{ .AgentName }} — Agent Dashboard",
@@ -122,7 +122,7 @@ groups:
   - name: {{ .AgentName }}_alerts
     rules:
       - alert: HighErrorRate
-        expr: rate(demi_tool_call_errors_total[5m]) / rate(demi_tool_calls_total[5m]) > 0.1
+        expr: rate(trove_tool_call_errors_total[5m]) / rate(trove_tool_calls_total[5m]) > 0.1
         for: 5m
         labels:
           severity: warning
@@ -132,7 +132,7 @@ groups:
           description: "Agent {{ .AgentName }} tool call error rate is above 10% for 5 minutes."
 
       - alert: HighLatency
-        expr: histogram_quantile(0.95, rate(demi_request_duration_seconds_bucket[5m])) > 30
+        expr: histogram_quantile(0.95, rate(trove_request_duration_seconds_bucket[5m])) > 30
         for: 5m
         labels:
           severity: warning
@@ -142,7 +142,7 @@ groups:
           description: "Agent {{ .AgentName }} p95 latency is above 30 seconds."
 
       - alert: BudgetLow
-        expr: demi_budget_remaining_usd < 10
+        expr: trove_budget_remaining_usd < 10
         for: 1m
         labels:
           severity: critical
@@ -152,7 +152,7 @@ groups:
           description: "Agent {{ .AgentName }} has less than $10 remaining in monthly budget."
 
       - alert: NoActiveRequests
-        expr: rate(demi_requests_total[15m]) == 0
+        expr: rate(trove_requests_total[15m]) == 0
         for: 15m
         labels:
           severity: info
@@ -168,7 +168,7 @@ const gcpAlertPolicyTmpl = `# {{ .AgentName }} — GCP Cloud Monitoring Alert Po
 # Note: These use Cloud Run metrics. Custom metrics from /metrics require
 # a Prometheus-to-Cloud-Monitoring bridge (e.g., google-cloud-prometheus).
 #
-# For custom demi_* metrics, deploy a Prometheus server with remote_write
+# For custom trove_* metrics, deploy a Prometheus server with remote_write
 # to Cloud Monitoring, or use the GMP (Google Managed Prometheus) service.
 
 displayName: "{{ .AgentName }} — High Error Rate"

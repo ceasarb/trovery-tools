@@ -7,11 +7,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/adapters"
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
-	"github.com/ceasarb/demigo-tools/internal/vigil/policy"
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
-	"github.com/ceasarb/demigo-tools/internal/vigil/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/vigil/adapters"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/policy"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/shared/console"
 	"github.com/spf13/cobra"
 )
 
@@ -21,10 +21,10 @@ var runCmd = &cobra.Command{
 	Long: `Launch a named tool adapter or any CLI command inside the active session.
 
 Examples:
-  demi vigil run claude-code
-  demi vigil run codex
-  demi vigil run -- pytest -x
-  demi vigil run -- npm install`,
+  trove vigil run claude-code
+  trove vigil run codex
+  trove vigil run -- pytest -x
+  trove vigil run -- npm install`,
 	Args:               cobra.ArbitraryArgs,
 	DisableFlagParsing: false,
 	RunE:               runRun,
@@ -54,7 +54,7 @@ func runRun(cmd *cobra.Command, args []string) error {
 	var genericCmd []string
 
 	if len(args) == 0 {
-		return fmt.Errorf("no tool specified — use `demi vigil run <tool>` or `demi vigil run -- <command>`")
+		return fmt.Errorf("no tool specified — use `trove vigil run <tool>` or `trove vigil run -- <command>`")
 	}
 
 	// Check if this is a named adapter.

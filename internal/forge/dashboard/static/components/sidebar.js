@@ -22,7 +22,7 @@ export function Sidebar({ route }) {
     return html`
         <aside class="sidebar">
             <div class="sidebar-logo">
-                Demigo Forge
+                Trovery Forge
                 <span>Dashboard</span>
             </div>
             <nav class="sidebar-nav">

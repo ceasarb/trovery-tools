@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 )
 
 func testConfig() *config.AgentConfig {

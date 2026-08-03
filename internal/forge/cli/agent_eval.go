@@ -9,18 +9,18 @@ import (
 	"strings"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/eval"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/provider"
-	anthropicProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/anthropic"
-	ollamaProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/ollama"
-	openaiProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/openai"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/runtime"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/env"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
-	"github.com/ceasarb/demigo-tools/internal/forge/workspace"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/eval"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
+	anthropicProvider "github.com/ceasarb/trovery-tools/internal/forge/agent/provider/anthropic"
+	ollamaProvider "github.com/ceasarb/trovery-tools/internal/forge/agent/provider/ollama"
+	openaiProvider "github.com/ceasarb/trovery-tools/internal/forge/agent/provider/openai"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/env"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/internal/forge/workspace"
 	"github.com/spf13/cobra"
 )
 
@@ -59,13 +59,13 @@ func runAgentEval(cmd *cobra.Command, args []string) error {
 	// Handle --report-last: generate report from last stored run without re-running
 	if evalReportLast {
 		ws, _ := workspace.Find(agentDir)
-		var demiDir string
+		var troveDir string
 		if ws != nil {
-			demiDir = filepath.Join(ws.Root, ".demi/forge")
+			troveDir = filepath.Join(ws.Root, ".trove/forge")
 		} else {
-			demiDir = filepath.Join(agentDir, ".demi/forge")
+			troveDir = filepath.Join(agentDir, ".trove/forge")
 		}
-		dbPath := filepath.Join(demiDir, "eval.db")
+		dbPath := filepath.Join(troveDir, "eval.db")
 		store, err := storage.NewEvalStore(dbPath)
 		if err != nil {
 			return fmt.Errorf("open eval store: %w", err)
@@ -88,7 +88,7 @@ func runAgentEval(cmd *cobra.Command, args []string) error {
 			eval.FormatTextReport(os.Stdout, result)
 		}
 
-		reportPath := filepath.Join(demiDir, fmt.Sprintf("%s-report.html", result.SuiteName))
+		reportPath := filepath.Join(troveDir, fmt.Sprintf("%s-report.html", result.SuiteName))
 		if err := eval.WriteHTMLReport(reportPath, result); err != nil {
 			return fmt.Errorf("write report: %w", err)
 		}
@@ -154,15 +154,15 @@ func runAgentEval(cmd *cobra.Command, args []string) error {
 
 	// Open eval store at workspace root
 	ws, _ := workspace.Find(agentDir)
-	var demiDir string
+	var troveDir string
 	if ws != nil {
-		demiDir = filepath.Join(ws.Root, ".demi/forge")
+		troveDir = filepath.Join(ws.Root, ".trove/forge")
 	} else {
-		demiDir = filepath.Join(agentDir, ".demi/forge")
+		troveDir = filepath.Join(agentDir, ".trove/forge")
 	}
-	dbPath := filepath.Join(demiDir, "eval.db")
-	if err := os.MkdirAll(demiDir, 0o755); err != nil {
-		return fmt.Errorf("create .demi/forge dir: %w", err)
+	dbPath := filepath.Join(troveDir, "eval.db")
+	if err := os.MkdirAll(troveDir, 0o755); err != nil {
+		return fmt.Errorf("create .trove/forge dir: %w", err)
 	}
 
 	store, err := storage.NewEvalStore(dbPath)
@@ -205,7 +205,7 @@ func runAgentEval(cmd *cobra.Command, args []string) error {
 
 		// Generate HTML report
 		if evalReport {
-			reportPath := filepath.Join(agentDir, ".demi/forge", fmt.Sprintf("%s-report.html", suite.Name))
+			reportPath := filepath.Join(agentDir, ".trove/forge", fmt.Sprintf("%s-report.html", suite.Name))
 			if htmlErr := eval.WriteHTMLReport(reportPath, result); htmlErr != nil {
 				console.Warning(fmt.Sprintf("Report write failed: %v", htmlErr))
 			} else {

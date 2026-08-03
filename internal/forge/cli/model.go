@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/model"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/model"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
 	"github.com/spf13/cobra"
 )
 
@@ -92,7 +92,7 @@ func runModelList(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(models) == 0 {
-		console.Info("No models found. Pull one with: demi forge model pull <name>")
+		console.Info("No models found. Pull one with: trove forge model pull <name>")
 		return nil
 	}
 

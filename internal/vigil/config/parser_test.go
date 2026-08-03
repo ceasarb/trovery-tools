@@ -28,10 +28,10 @@ tracking:
   log_commands: true
   track_tokens: true
   track_cost: true
-  session_dir: ".demi/vigil/sessions/"
+  session_dir: ".trove/vigil/sessions/"
   export_format: "json"
 `
-	path := filepath.Join(dir, ".demi/vigil.yaml")
+	path := filepath.Join(dir, ".trove/vigil.yaml")
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	os.WriteFile(path, []byte(content), 0644)
 
@@ -50,7 +50,7 @@ tracking:
 func TestLoadConfig_MissingName(t *testing.T) {
 	dir := t.TempDir()
 	content := `version: "0.1.0"`
-	path := filepath.Join(dir, ".demi/vigil.yaml")
+	path := filepath.Join(dir, ".trove/vigil.yaml")
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	os.WriteFile(path, []byte(content), 0644)
 
@@ -76,7 +76,7 @@ policies:
     block_patterns:
       - "[invalid"
 `
-	path := filepath.Join(dir, ".demi/vigil.yaml")
+	path := filepath.Join(dir, ".trove/vigil.yaml")
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	os.WriteFile(path, []byte(content), 0644)
 
@@ -89,7 +89,7 @@ policies:
 func TestLoadConfig_Defaults(t *testing.T) {
 	dir := t.TempDir()
 	content := `name: minimal`
-	path := filepath.Join(dir, ".demi/vigil.yaml")
+	path := filepath.Join(dir, ".trove/vigil.yaml")
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	os.WriteFile(path, []byte(content), 0644)
 
@@ -108,7 +108,7 @@ func TestLoadConfig_Defaults(t *testing.T) {
 	if !cfg.Tracking.LogFileChanges {
 		t.Error("expected log_file_changes default true")
 	}
-	if cfg.Tracking.SessionDir != ".demi/vigil/sessions/" {
+	if cfg.Tracking.SessionDir != ".trove/vigil/sessions/" {
 		t.Errorf("expected default session_dir, got %q", cfg.Tracking.SessionDir)
 	}
 	if len(cfg.Policies.Secrets.BlockPatterns) != 6 {
@@ -127,7 +127,7 @@ tools:
   forge-agent:
     enabled: true
 `
-	path := filepath.Join(dir, ".demi/vigil.yaml")
+	path := filepath.Join(dir, ".trove/vigil.yaml")
 	os.MkdirAll(filepath.Dir(path), 0o755)
 	os.WriteFile(path, []byte(content), 0644)
 
@@ -138,7 +138,7 @@ tools:
 }
 
 func TestLoadConfig_NotFound(t *testing.T) {
-	_, err := LoadConfig("/nonexistent/.demi/vigil.yaml")
+	_, err := LoadConfig("/nonexistent/.trove/vigil.yaml")
 	if err == nil {
 		t.Fatal("expected error for missing file")
 	}
@@ -146,9 +146,9 @@ func TestLoadConfig_NotFound(t *testing.T) {
 
 func TestFindConfig_SearchesUpward(t *testing.T) {
 	dir := t.TempDir()
-	// Create .demi/vigil.yaml at root.
-	os.MkdirAll(filepath.Join(dir, ".demi"), 0o755)
-	os.WriteFile(filepath.Join(dir, ".demi/vigil.yaml"), []byte("name: root"), 0644)
+	// Create .trove/vigil.yaml at root.
+	os.MkdirAll(filepath.Join(dir, ".trove"), 0o755)
+	os.WriteFile(filepath.Join(dir, ".trove/vigil.yaml"), []byte("name: root"), 0644)
 
 	// Create a nested child directory.
 	child := filepath.Join(dir, "a", "b", "c")
@@ -164,7 +164,7 @@ func TestFindConfig_SearchesUpward(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	// Resolve symlinks for comparison (macOS /var → /private/var).
-	expected, _ := filepath.EvalSymlinks(filepath.Join(dir, ".demi/vigil.yaml"))
+	expected, _ := filepath.EvalSymlinks(filepath.Join(dir, ".trove/vigil.yaml"))
 	actual, _ := filepath.EvalSymlinks(found)
 	if actual != expected {
 		t.Errorf("expected %q, got %q", expected, actual)

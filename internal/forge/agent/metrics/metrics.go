@@ -7,7 +7,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-const namespace = "demi"
+const namespace = "trove"
 
 // Metrics holds all Prometheus metrics for the agent HTTP server.
 type Metrics struct {

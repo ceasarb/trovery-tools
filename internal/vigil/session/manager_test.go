@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
 )
 
 func testConfig() *config.VigilConfig {

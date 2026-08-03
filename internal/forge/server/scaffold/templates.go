@@ -36,7 +36,7 @@ packages = ["src/{{.PythonPackage}}"]
 [project.scripts]
 "{{.ServiceName}}" = "{{.PythonPackage}}.server:main"
 
-[tool.demi]
+[tool.trove]
 server_module = "{{.PythonPackage}}.server"
 command = "uv run {{.ServiceName}}"
 fixtures = "tests/fixtures"
@@ -97,10 +97,10 @@ if __name__ == "__main__":
   - name: hello tool handles different names
     tool: hello
     input:
-      name: "Demigo"
+      name: "Trovery"
     expect:
       status: success
-      content_contains: "Hello, Demigo!"
+      content_contains: "Hello, Trovery!"
 `,
 	},
 	{
@@ -118,14 +118,14 @@ uv sync
 # Run the server
 uv run {{.ServiceName}}
 
-# Test with Demigo Forge
-demi forge server test
-demi forge server dev
+# Test with Trovery Forge
+trove forge server test
+trove forge server dev
 ` + "```" + `
 `,
 	},
 	{
-		Path: "demi.toml",
+		Path: "trove.toml",
 		Template: `[server]
 name = "{{.ServiceName}}"
 entry = "src/{{.PythonPackage}}/server.py"
@@ -162,7 +162,7 @@ packages = ["src/{{.PythonPackage}}"]
 [project.scripts]
 "{{.ServiceName}}" = "{{.PythonPackage}}.server:main"
 
-[tool.demi]
+[tool.trove]
 server_module = "{{.PythonPackage}}.server"
 command = "uv run {{.ServiceName}}"
 transport = "http"
@@ -238,14 +238,14 @@ uv sync
 # Run the server (HTTP on port 8000)
 uv run {{.ServiceName}}
 
-# Test with Demigo Forge
-demi forge server test
-demi forge server dev
+# Test with Trovery Forge
+trove forge server test
+trove forge server dev
 ` + "```" + `
 `,
 	},
 	{
-		Path: "demi.toml",
+		Path: "trove.toml",
 		Template: `[server]
 name = "{{.ServiceName}}"
 entry = "src/{{.PythonPackage}}/server.py"
@@ -367,14 +367,14 @@ npm run build
 # Run the server
 npm start
 
-# Test with Demigo Forge
-demi forge server test
-demi forge server dev
+# Test with Trovery Forge
+trove forge server test
+trove forge server dev
 ` + "```" + `
 `,
 	},
 	{
-		Path: "demi.toml",
+		Path: "trove.toml",
 		Template: `[server]
 name = "{{.ServiceName}}"
 entry = "src/server.ts"

@@ -8,10 +8,10 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/runtime"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
-	"github.com/ceasarb/demigo-tools/internal/forge/dashboard/ws"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	"github.com/ceasarb/trovery-tools/internal/forge/dashboard/ws"
 )
 
 var wsUpgrader = websocket.Upgrader{

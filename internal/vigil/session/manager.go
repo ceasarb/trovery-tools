@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
 )
 
 const (
@@ -17,8 +17,8 @@ const (
 )
 
 var (
-	ErrActiveSessionExists = errors.New("a session is already active — run `demi vigil stop` first")
-	ErrNoActiveSession     = errors.New("no active session — run `demi vigil start` first")
+	ErrActiveSessionExists = errors.New("a session is already active — run `trove vigil stop` first")
+	ErrNoActiveSession     = errors.New("no active session — run `trove vigil start` first")
 	ErrSessionNotFound     = errors.New("session not found")
 	ErrStaleSession        = errors.New("stale session detected (24h+) — use --force to clear")
 )
@@ -187,7 +187,7 @@ func (m *SessionManager) SessionsDir() string {
 }
 
 func (m *SessionManager) activeMarkerPath() string {
-	return filepath.Join(m.ProjectRoot, ".demi/vigil", activeSessionFile)
+	return filepath.Join(m.ProjectRoot, ".trove/vigil", activeSessionFile)
 }
 
 func (m *SessionManager) writeActiveMarker(id string) error {

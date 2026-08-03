@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/guardrails"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/provider"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/guardrails"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
 )
 
 // mockProvider implements provider.Provider for testing.
@@ -142,17 +142,17 @@ func TestInvokeEndpoint(t *testing.T) {
 	}
 
 	// Verify cost headers
-	if w.Header().Get("X-Demi-Tokens-In") != "10" {
-		t.Fatalf("expected X-Demi-Tokens-In=10, got %s", w.Header().Get("X-Demi-Tokens-In"))
+	if w.Header().Get("X-Trove-Tokens-In") != "10" {
+		t.Fatalf("expected X-Trove-Tokens-In=10, got %s", w.Header().Get("X-Trove-Tokens-In"))
 	}
-	if w.Header().Get("X-Demi-Tokens-Out") != "20" {
-		t.Fatalf("expected X-Demi-Tokens-Out=20, got %s", w.Header().Get("X-Demi-Tokens-Out"))
+	if w.Header().Get("X-Trove-Tokens-Out") != "20" {
+		t.Fatalf("expected X-Trove-Tokens-Out=20, got %s", w.Header().Get("X-Trove-Tokens-Out"))
 	}
-	if w.Header().Get("X-Demi-Tool-Calls") != "0" {
-		t.Fatalf("expected X-Demi-Tool-Calls=0, got %s", w.Header().Get("X-Demi-Tool-Calls"))
+	if w.Header().Get("X-Trove-Tool-Calls") != "0" {
+		t.Fatalf("expected X-Trove-Tool-Calls=0, got %s", w.Header().Get("X-Trove-Tool-Calls"))
 	}
-	if w.Header().Get("X-Demi-Cost") == "" {
-		t.Fatal("expected X-Demi-Cost header to be set")
+	if w.Header().Get("X-Trove-Cost") == "" {
+		t.Fatal("expected X-Trove-Cost header to be set")
 	}
 }
 
@@ -250,8 +250,8 @@ func TestCORSHeaders(t *testing.T) {
 	if w.Header().Get("Access-Control-Allow-Origin") != "*" {
 		t.Fatal("expected CORS origin header")
 	}
-	if !strings.Contains(w.Header().Get("Access-Control-Expose-Headers"), "X-Demi-Cost") {
-		t.Fatal("expected X-Demi-Cost in exposed headers")
+	if !strings.Contains(w.Header().Get("Access-Control-Expose-Headers"), "X-Trove-Cost") {
+		t.Fatal("expected X-Trove-Cost in exposed headers")
 	}
 }
 
@@ -300,7 +300,7 @@ func TestInvokeStreamDoneEventContainsUsage(t *testing.T) {
 }
 
 func newTestServerWithBudget(response string, perReq, monthly float64) (*Server, func()) {
-	dir := filepath.Join("/tmp", "demi-forge-test-budget")
+	dir := filepath.Join("/tmp", "trove-forge-test-budget")
 	store, _ := guardrails.NewCostStore(filepath.Join(dir, "cost.db"))
 	budget := guardrails.New(perReq, monthly, store)
 
@@ -369,8 +369,8 @@ func TestInvokeMonthlyBudgetExceeded(t *testing.T) {
 		t.Fatalf("expected 429, got %d: %s", w.Code, w.Body.String())
 	}
 
-	if w.Header().Get("X-Demi-Monthly-Remaining") != "0.000000" {
-		t.Fatalf("expected X-Demi-Monthly-Remaining=0.000000, got %s", w.Header().Get("X-Demi-Monthly-Remaining"))
+	if w.Header().Get("X-Trove-Monthly-Remaining") != "0.000000" {
+		t.Fatalf("expected X-Trove-Monthly-Remaining=0.000000, got %s", w.Header().Get("X-Trove-Monthly-Remaining"))
 	}
 }
 
@@ -413,9 +413,9 @@ func TestInvokeMonthlyBudgetRemainingHeader(t *testing.T) {
 		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
 	}
 
-	remaining := w.Header().Get("X-Demi-Monthly-Remaining")
+	remaining := w.Header().Get("X-Trove-Monthly-Remaining")
 	if remaining == "" {
-		t.Fatal("expected X-Demi-Monthly-Remaining header")
+		t.Fatal("expected X-Trove-Monthly-Remaining header")
 	}
 }
 

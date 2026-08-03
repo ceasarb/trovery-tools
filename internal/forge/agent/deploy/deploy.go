@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 )
 
 // Target identifies the deployment target.

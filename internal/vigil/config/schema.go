@@ -8,7 +8,7 @@ type WebhookConfig struct {
 	Format  string            `yaml:"format,omitempty"` // "json" (default) or "slack"
 }
 
-// VigilConfig is the top-level configuration parsed from .demi/vigil.yaml.
+// VigilConfig is the top-level configuration parsed from .trove/vigil.yaml.
 type VigilConfig struct {
 	Name     string                `yaml:"name"`
 	Version  string                `yaml:"version"`
@@ -105,7 +105,7 @@ func DefaultConfig() VigilConfig {
 			LogCommands:    true,
 			TrackTokens:    true,
 			TrackCost:      true,
-			SessionDir:     ".demi/vigil/sessions/",
+			SessionDir:     ".trove/vigil/sessions/",
 			ExportFormat:   "json",
 		},
 	}

@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
 	"github.com/google/uuid"
 )
 

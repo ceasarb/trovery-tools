@@ -6,14 +6,14 @@ import (
 	"os"
 	"path/filepath"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/agenttool"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/provider"
-	anthropicProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/anthropic"
-	ollamaProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/ollama"
-	openaiProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/openai"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/agenttool"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
+	anthropicProvider "github.com/ceasarb/trovery-tools/internal/forge/agent/provider/anthropic"
+	ollamaProvider "github.com/ceasarb/trovery-tools/internal/forge/agent/provider/ollama"
+	openaiProvider "github.com/ceasarb/trovery-tools/internal/forge/agent/provider/openai"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 // resolveAgentDir finds an agent directory by name within the workspace.

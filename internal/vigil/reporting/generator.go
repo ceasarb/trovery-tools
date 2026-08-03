@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
 )
 
 // ReportGenerator creates reports from session data.

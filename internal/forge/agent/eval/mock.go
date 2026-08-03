@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 // ToolCaller abstracts tool invocation so we can intercept calls.

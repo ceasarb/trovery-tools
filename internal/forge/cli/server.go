@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/server/devserver"
-	"github.com/ceasarb/demigo-tools/internal/forge/server/harness"
-	"github.com/ceasarb/demigo-tools/internal/forge/server/scaffold"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/env"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/templates"
-	"github.com/ceasarb/demigo-tools/internal/forge/workspace"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/devserver"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/scaffold"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/env"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/templates"
+	"github.com/ceasarb/trovery-tools/internal/forge/workspace"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
@@ -92,7 +92,7 @@ func runServerCreate(cmd *cobra.Command, args []string) error {
 	}
 
 	if serverDesc == "" {
-		serverDesc = "An MCP server built with Demigo Forge"
+		serverDesc = "An MCP server built with Trovery Forge"
 	}
 
 	console.Header("Creating server: " + serverName)
@@ -153,8 +153,8 @@ func runServerCreate(cmd *cobra.Command, args []string) error {
 		console.Dim("  npm install")
 		console.Dim("  npm run build")
 	}
-	console.Dim("  demi forge server test")
-	console.Dim("  demi forge server dev")
+	console.Dim("  trove forge server test")
+	console.Dim("  trove forge server dev")
 
 	return nil
 }
@@ -176,7 +176,7 @@ func runServerTest(cmd *cobra.Command, args []string) error {
 	// Load server config
 	cfg, err := config.LoadServerConfig(cwd)
 	if err != nil {
-		console.Error(fmt.Sprintf("No demi.toml found: %v", err))
+		console.Error(fmt.Sprintf("No trove.toml found: %v", err))
 		console.Dim("  Run this command from inside a server directory")
 		return err
 	}
@@ -195,7 +195,7 @@ func runServerTest(cmd *cobra.Command, args []string) error {
 	// Parse command
 	parts := strings.Fields(cfg.Server.Command)
 	if len(parts) == 0 {
-		return fmt.Errorf("empty server command in demi.toml")
+		return fmt.Errorf("empty server command in trove.toml")
 	}
 
 	// Resolve env vars for the server
@@ -302,7 +302,7 @@ func runServerDev(cmd *cobra.Command, args []string) error {
 
 	cfg, err := config.LoadServerConfig(cwd)
 	if err != nil {
-		console.Error(fmt.Sprintf("No demi.toml found: %v", err))
+		console.Error(fmt.Sprintf("No trove.toml found: %v", err))
 		console.Dim("  Run this command from inside a server directory")
 		return err
 	}
@@ -341,7 +341,7 @@ func runServerList(cmd *cobra.Command, args []string) error {
 	}
 
 	if ws == nil {
-		console.Warning("Not inside an Demigo Forge workspace")
+		console.Warning("Not inside an Trovery Forge workspace")
 		return nil
 	}
 
@@ -356,7 +356,7 @@ func runServerList(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(entries) == 0 {
-		console.Info("No servers found. Run: demi forge server create")
+		console.Info("No servers found. Run: trove forge server create")
 		return nil
 	}
 

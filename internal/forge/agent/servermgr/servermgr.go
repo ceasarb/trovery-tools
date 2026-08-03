@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/server/harness"
-	serverconfig "github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/env"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
+	serverconfig "github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/env"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 // ToolCaller can execute a tool call. Both harness.Client and agenttool.Server implement this.

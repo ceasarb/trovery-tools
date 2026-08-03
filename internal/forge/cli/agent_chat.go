@@ -10,21 +10,21 @@ import (
 	"strings"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/guardrails"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/orchestrator"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/palette"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/provider"
-	paletteclient "github.com/ceasarb/demigo-tools/internal/forge/palette/go-client"
-	anthropicProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/anthropic"
-	ollamaProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/ollama"
-	openaiProvider "github.com/ceasarb/demigo-tools/internal/forge/agent/provider/openai"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/runtime"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/session"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/env"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/guardrails"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/orchestrator"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/palette"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
+	paletteclient "github.com/ceasarb/trovery-tools/internal/forge/palette/go-client"
+	anthropicProvider "github.com/ceasarb/trovery-tools/internal/forge/agent/provider/anthropic"
+	ollamaProvider "github.com/ceasarb/trovery-tools/internal/forge/agent/provider/ollama"
+	openaiProvider "github.com/ceasarb/trovery-tools/internal/forge/agent/provider/openai"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/session"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/env"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
 	"github.com/spf13/cobra"
 )
 
@@ -459,14 +459,14 @@ func initRecorder(cfg *agentcfg.AgentConfig) (*session.Recorder, func()) {
 		return session.NewDisabled(), nil
 	}
 
-	// Create .demi/forge directory in CWD if needed
-	demiDir := ".demi/forge"
-	if err := os.MkdirAll(demiDir, 0o755); err != nil {
-		console.Error(fmt.Sprintf("Cannot create %s: %v", demiDir, err))
+	// Create .trove/forge directory in CWD if needed
+	troveDir := ".trove/forge"
+	if err := os.MkdirAll(troveDir, 0o755); err != nil {
+		console.Error(fmt.Sprintf("Cannot create %s: %v", troveDir, err))
 		return session.NewDisabled(), nil
 	}
 
-	dbPath := filepath.Join(demiDir, "sessions.db")
+	dbPath := filepath.Join(troveDir, "sessions.db")
 	store, err := storage.NewSessionStore(dbPath)
 	if err != nil {
 		console.Error(fmt.Sprintf("Session store: %v", err))
@@ -597,7 +597,7 @@ func findPaletteServerDir() string {
 
 func init() {
 	agentChatCmd.Flags().StringVarP(&chatMessage, "message", "m", "", "Single message (non-interactive)")
-	agentChatCmd.Flags().BoolVar(&chatSave, "save", false, "Record session to SQLite (.demi/forge/sessions.db)")
+	agentChatCmd.Flags().BoolVar(&chatSave, "save", false, "Record session to SQLite (.trove/forge/sessions.db)")
 	agentChatCmd.Flags().BoolVar(&chatVerbose, "verbose", false, "Show full tool call arguments and results")
 	agentChatCmd.Flags().BoolVar(&chatTrace, "trace", false, "Show structured decision log")
 	agentCmd.AddCommand(agentChatCmd)

@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/server/harness"
-	"github.com/ceasarb/demigo-tools/internal/forge/server/sandbox"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/container"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/sandbox"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/container"
 )
 
 // SandboxConfig holds configuration for sandboxed server startup.
@@ -41,9 +41,9 @@ func (m *Manager) StartServerSandboxed(ctx context.Context, ref agentcfg.ServerR
 	// Load server config to get the command
 	serverCfg, err := config.LoadServerConfig(serverDir)
 	if err != nil {
-		// Fall back to the ref's command if no demi.toml
+		// Fall back to the ref's command if no trove.toml
 		if ref.Command == "" {
-			return nil, fmt.Errorf("server %s: no demi.toml and no command specified", ref.Name)
+			return nil, fmt.Errorf("server %s: no trove.toml and no command specified", ref.Name)
 		}
 		serverCfg = &config.ServerConfig{
 			Server: config.ServerSection{
@@ -58,7 +58,7 @@ func (m *Manager) StartServerSandboxed(ctx context.Context, ref agentcfg.ServerR
 		serverCommand = ref.Command
 	}
 	if serverCommand == "" {
-		return nil, fmt.Errorf("server %s: no command found in demi.toml or agent.yaml", ref.Name)
+		return nil, fmt.Errorf("server %s: no command found in trove.toml or agent.yaml", ref.Name)
 	}
 
 	// Detect language for Dockerfile generation
@@ -78,7 +78,7 @@ func (m *Manager) StartServerSandboxed(ctx context.Context, ref agentcfg.ServerR
 	diPath := filepath.Join(serverDir, ".dockerignore")
 	createdIgnore := false
 	if _, statErr := os.Stat(diPath); os.IsNotExist(statErr) {
-		os.WriteFile(diPath, []byte(".venv\n.demi/forge\n__pycache__\n*.pyc\nnode_modules\n.git\n"), 0o644)
+		os.WriteFile(diPath, []byte(".venv\n.trove/forge\n__pycache__\n*.pyc\nnode_modules\n.git\n"), 0o644)
 		createdIgnore = true
 	}
 	if createdIgnore {
@@ -86,15 +86,15 @@ func (m *Manager) StartServerSandboxed(ctx context.Context, ref agentcfg.ServerR
 	}
 
 	// Build the container image
-	imageTag := "demi-forge-serve-" + strings.ToLower(ref.Name)
+	imageTag := "trove-forge-serve-" + strings.ToLower(ref.Name)
 	buildOpts := container.BuildOpts{
 		ContextDir: serverDir,
 		Dockerfile: dockerfilePath,
 		Tag:        imageTag,
 		Labels: map[string]string{
-			"demi.sandbox": "true",
-			"demi.server":  ref.Name,
-			"demi.policy":  sbx.Policy.Name,
+			"trove.sandbox": "true",
+			"trove.server":  ref.Name,
+			"trove.policy":  sbx.Policy.Name,
 		},
 	}
 
@@ -146,7 +146,7 @@ func buildRunArgs(runtime, imageTag, serverName string, policy *sandbox.Security
 		"run",
 		"-i",    // Keep stdin open for MCP stdio protocol
 		"--rm",  // Clean up container on exit
-		"--name", fmt.Sprintf("demi-forge-serve-%s", serverName),
+		"--name", fmt.Sprintf("trove-forge-serve-%s", serverName),
 	}
 
 	// Memory limit
@@ -189,9 +189,9 @@ func buildRunArgs(runtime, imageTag, serverName string, policy *sandbox.Security
 
 	// Labels for identification
 	args = append(args,
-		"--label", "demi.sandbox=true",
-		"--label", fmt.Sprintf("demi.server=%s", serverName),
-		"--label", fmt.Sprintf("demi.policy=%s", policy.Name),
+		"--label", "trove.sandbox=true",
+		"--label", fmt.Sprintf("trove.server=%s", serverName),
+		"--label", fmt.Sprintf("trove.policy=%s", policy.Name),
 	)
 
 	// Image tag (must be last before any CMD override)

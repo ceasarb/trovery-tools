@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-const MarkerFile = ".demi/forge.yaml"
+const MarkerFile = ".trove/forge.yaml"
 
 // Workspace represents a detected workspace.
 type Workspace struct {
@@ -14,7 +14,7 @@ type Workspace struct {
 	Name string
 }
 
-// Find walks up from dir looking for the .demi/forge.yaml workspace marker.
+// Find walks up from dir looking for the .trove/forge.yaml workspace marker.
 // Returns nil if no workspace is found.
 func Find(dir string) (*Workspace, error) {
 	abs, err := filepath.Abs(dir)
@@ -93,10 +93,10 @@ func Init(name string, noServers bool) (string, error) {
 		return "", fmt.Errorf("create directory: %w", err)
 	}
 
-	// Write workspace marker under .demi/ (create the dir first — WriteFile won't)
+	// Write workspace marker under .trove/ (create the dir first — WriteFile won't)
 	marker := filepath.Join(dir, MarkerFile)
 	if err := os.MkdirAll(filepath.Dir(marker), 0o755); err != nil {
-		return "", fmt.Errorf("create .demi/: %w", err)
+		return "", fmt.Errorf("create .trove/: %w", err)
 	}
 	content := fmt.Sprintf("workspace:\n  name: %q\n", filepath.Base(dir))
 	if err := os.WriteFile(marker, []byte(content), 0o644); err != nil {
@@ -116,13 +116,13 @@ func Init(name string, noServers bool) (string, error) {
 	}
 
 	// Write README
-	readme := fmt.Sprintf("# %s\n\nAn [Demigo Forge](https://github.com/ceasarb/demigo-tools) workspace.\n", filepath.Base(dir))
+	readme := fmt.Sprintf("# %s\n\nAn [Trovery Forge](https://github.com/ceasarb/trovery-tools) workspace.\n", filepath.Base(dir))
 	if err := os.WriteFile(filepath.Join(dir, "README.md"), []byte(readme), 0o644); err != nil {
 		return "", fmt.Errorf("write README.md: %w", err)
 	}
 
 	// Write .gitignore
-	gitignore := ".demi/forge/\n.env\n*.db\n"
+	gitignore := ".trove/forge/\n.env\n*.db\n"
 	if err := os.WriteFile(filepath.Join(dir, ".gitignore"), []byte(gitignore), 0o644); err != nil {
 		return "", fmt.Errorf("write .gitignore: %w", err)
 	}

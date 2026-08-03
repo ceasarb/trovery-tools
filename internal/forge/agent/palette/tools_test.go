@@ -12,7 +12,7 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	paletteclient "github.com/ceasarb/demigo-tools/internal/forge/palette/go-client"
+	paletteclient "github.com/ceasarb/trovery-tools/internal/forge/palette/go-client"
 )
 
 // mockPaletteServer simulates a Palette WS server for testing.

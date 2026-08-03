@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
 	"github.com/spf13/cobra"
 )
 
 var Version = "dev"
 
 var rootCmd = &cobra.Command{
-	Use:   "demi-forge",
-	Short: "Demigo Forge — forge your AI from prototype to production",
-	Long: console.HeaderStyle.Render("Demigo Forge") + "\n" +
+	Use:   "trove-forge",
+	Short: "Trovery Forge — forge your AI from prototype to production",
+	Long: console.HeaderStyle.Render("Trovery Forge") + "\n" +
 		console.DimStyle.Render("Forge your AI — from prototype to production") + "\n\n" +
 		"Scaffold, test, and deploy MCP servers and AI agents.\n" +
-		"Get started: demi forge init my-project",
+		"Get started: trove forge init my-project",
 	SilenceUsage:  true,
 	SilenceErrors: true,
 }
@@ -32,7 +32,7 @@ func Execute() error {
 func init() {
 	rootCmd.Version = Version
 	rootCmd.SetVersionTemplate(
-		console.HeaderStyle.Render("Demigo Forge") + " " +
+		console.HeaderStyle.Render("Trovery Forge") + " " +
 			console.DimStyle.Render("v{{.Version}}") + "\n",
 	)
 

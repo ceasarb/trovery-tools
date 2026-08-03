@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/policy"
-	"github.com/ceasarb/demigo-tools/internal/vigil/reporting"
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
-	"github.com/ceasarb/demigo-tools/internal/vigil/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/vigil/policy"
+	"github.com/ceasarb/trovery-tools/internal/vigil/reporting"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/shared/console"
 	"github.com/spf13/cobra"
 )
 

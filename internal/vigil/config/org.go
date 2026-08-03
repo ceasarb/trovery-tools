@@ -18,13 +18,13 @@ type OrgPolicy struct {
 	Locked   []string `yaml:"locked,omitempty"` // Field paths that repos can't override.
 }
 
-// orgPolicyDir returns the path to ~/.demi/vigil/.
+// orgPolicyDir returns the path to ~/.trove/vigil/.
 func orgPolicyDir() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return ""
 	}
-	return filepath.Join(home, ".demi/vigil")
+	return filepath.Join(home, ".trove/vigil")
 }
 
 // OrgPolicyPath returns the full path to the org policy file.
@@ -36,7 +36,7 @@ func OrgPolicyPath() string {
 	return filepath.Join(dir, orgPolicyFileName)
 }
 
-// LoadOrgPolicy loads org-wide policy from ~/.demi/vigil/org-policy.yaml.
+// LoadOrgPolicy loads org-wide policy from ~/.trove/vigil/org-policy.yaml.
 // Returns nil if the file doesn't exist (org policy is optional).
 func LoadOrgPolicy() (*OrgPolicy, error) {
 	path := OrgPolicyPath()

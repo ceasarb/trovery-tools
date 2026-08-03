@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/skills"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/workspace"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/skills"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/workspace"
 	"github.com/spf13/cobra"
 )
 
@@ -63,8 +63,8 @@ description: >
   Describe what this skill does and when to use it.
 tags: []
 metadata:
-  demi.namespace: %s
-  demi.version: 0.1.0
+  trove.namespace: %s
+  trove.version: 0.1.0
 ---
 
 # %s
@@ -85,7 +85,7 @@ The agent will receive these instructions when it activates this skill.
 	console.Dim(fmt.Sprintf("  %s/scripts/", dir))
 	console.Dim(fmt.Sprintf("  %s/examples/", dir))
 	fmt.Println()
-	console.Info("Next: edit SKILL.md, then run: demi forge agent skill test " + dir)
+	console.Info("Next: edit SKILL.md, then run: trove forge agent skill test " + dir)
 
 	return nil
 }
@@ -270,7 +270,7 @@ func runSkillList(cmd *cobra.Command, args []string) error {
 
 	if cfg.Skills == nil || len(cfg.Skills.Attached) == 0 {
 		console.Dim("  No skills attached")
-		console.Dim("  Attach a skill: demi forge agent skill attach " + cfg.Name + " --skill <path>")
+		console.Dim("  Attach a skill: trove forge agent skill attach " + cfg.Name + " --skill <path>")
 		return nil
 	}
 

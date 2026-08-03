@@ -3,9 +3,9 @@ package policy
 import (
 	"fmt"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
-	"github.com/ceasarb/demigo-tools/internal/vigil/skills"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/skills"
 )
 
 // SkillPolicyEngine validates skills against configured policies.

@@ -3,8 +3,8 @@ package servermgr
 import (
 	"testing"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 func makeTools(names ...string) []protocol.Tool {

@@ -3,7 +3,7 @@ package deploy
 import (
 	"fmt"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 )
 
 type helmData struct {
@@ -37,7 +37,7 @@ func (d *Deployer) buildHelmData() helmData {
 
 const helmChartYamlTmpl = `apiVersion: v2
 name: {{ .ChartName }}
-description: Helm chart for {{ .AgentName }} agent (Demigo Forge)
+description: Helm chart for {{ .AgentName }} agent (Trovery Forge)
 type: application
 version: 0.1.0
 appVersion: "1.0.0"

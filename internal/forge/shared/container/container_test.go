@@ -7,7 +7,7 @@ import (
 func TestBuildArgs(t *testing.T) {
 	opts := BuildOpts{
 		ContextDir: "/tmp/test",
-		Dockerfile: "Dockerfile.demi",
+		Dockerfile: "Dockerfile.trove",
 		Tag:        "test-image:latest",
 		Labels:     map[string]string{"app": "test"},
 		BuildArgs:  map[string]string{"VERSION": "1.0"},
@@ -18,7 +18,7 @@ func TestBuildArgs(t *testing.T) {
 	// Verify essential flags are present
 	assertContains(t, args, "build")
 	assertContains(t, args, "-f")
-	assertContains(t, args, "Dockerfile.demi")
+	assertContains(t, args, "Dockerfile.trove")
 	assertContains(t, args, "-t")
 	assertContains(t, args, "test-image:latest")
 	assertContains(t, args, "--label")

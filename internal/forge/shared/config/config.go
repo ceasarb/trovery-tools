@@ -50,9 +50,12 @@ type pyprojectProject struct {
 }
 
 type pyprojectTool struct {
+	Trove *pyprojectServer `toml:"trove"`
+	// Legacy sections, newest first. Each names a prior brand generation:
+	// Demigo, then Ajentis, then HatchDX. Read but never written.
 	Demi *pyprojectServer `toml:"demi"`
-	Ajnt *pyprojectServer `toml:"ajnt"` // legacy (pre-Demigo)
-	Hdx  *pyprojectServer `toml:"hdx"`  // legacy (pre-Ajentis)
+	Ajnt *pyprojectServer `toml:"ajnt"`
+	Hdx  *pyprojectServer `toml:"hdx"`
 }
 
 type pyprojectServer struct {
@@ -65,12 +68,12 @@ type pyprojectServer struct {
 
 // LoadServerConfig reads server config from the given directory.
 // It tries these sources in order:
-//  1. demi.toml (or legacy ajnt.toml)
-//  2. pyproject.toml [tool.demi] (or legacy [tool.ajnt])
+//  1. trove.toml (or legacy demi.toml, ajnt.toml)
+//  2. pyproject.toml [tool.trove] (or legacy [tool.demi], [tool.ajnt])
 //  3. pyproject.toml [tool.hdx] (backward compat)
 func LoadServerConfig(dir string) (*ServerConfig, error) {
-	// Try demi.toml first, then the legacy ajnt.toml
-	for _, name := range []string{"demi.toml", "ajnt.toml"} {
+	// Try trove.toml first, then the legacy names from earlier rebrands
+	for _, name := range []string{"trove.toml", "demi.toml", "ajnt.toml"} {
 		data, err := os.ReadFile(filepath.Join(dir, name))
 		if err != nil {
 			continue
@@ -86,7 +89,7 @@ func LoadServerConfig(dir string) (*ServerConfig, error) {
 	pyPath := filepath.Join(dir, "pyproject.toml")
 	data, err := os.ReadFile(pyPath)
 	if err != nil {
-		return nil, fmt.Errorf("no demi.toml or pyproject.toml found in %s", dir)
+		return nil, fmt.Errorf("no trove.toml or pyproject.toml found in %s", dir)
 	}
 
 	var pyproject pyprojectFile
@@ -94,16 +97,16 @@ func LoadServerConfig(dir string) (*ServerConfig, error) {
 		return nil, fmt.Errorf("parse pyproject.toml: %w", err)
 	}
 
-	// Prefer [tool.demi], fall back to legacy [tool.ajnt] then [tool.hdx]
-	toolCfg := pyproject.Tool.Demi
-	if toolCfg == nil {
-		toolCfg = pyproject.Tool.Ajnt
+	// Prefer [tool.trove], then each legacy brand section newest-first.
+	toolCfg := pyproject.Tool.Trove
+	for _, legacy := range []*pyprojectServer{pyproject.Tool.Demi, pyproject.Tool.Ajnt, pyproject.Tool.Hdx} {
+		if toolCfg != nil {
+			break
+		}
+		toolCfg = legacy
 	}
 	if toolCfg == nil {
-		toolCfg = pyproject.Tool.Hdx
-	}
-	if toolCfg == nil {
-		return nil, fmt.Errorf("pyproject.toml has no [tool.demi], [tool.ajnt], or [tool.hdx] section")
+		return nil, fmt.Errorf("pyproject.toml has no [tool.trove], [tool.demi], [tool.ajnt], or [tool.hdx] section")
 	}
 
 	transport := toolCfg.Transport

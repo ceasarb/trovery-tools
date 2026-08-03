@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
 )
 
 func setupTestIndex(t *testing.T) *session.SQLiteIndex {

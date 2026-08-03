@@ -1,4 +1,4 @@
-# .demi/vigil.yaml — TypeScript project configuration
+# .trove/vigil.yaml — TypeScript project configuration
 name: "{{.Name}}"
 version: "0.1.0"
 
@@ -46,5 +46,5 @@ tracking:
   log_commands: true
   track_tokens: true
   track_cost: true
-  session_dir: ".demi/vigil/sessions/"
+  session_dir: ".trove/vigil/sessions/"
   export_format: "json"

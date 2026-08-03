@@ -52,14 +52,14 @@ func TestParseDir(t *testing.T) {
 	}
 }
 
-func TestParseResolvesDemiMetadata(t *testing.T) {
+func TestParseResolvesTroveMetadata(t *testing.T) {
 	dir := t.TempDir()
 	writeSkill(t, dir, `---
 name: code-review
 description: desc
 metadata:
-  demi.namespace: acme
-  demi.version: 2.3.4
+  trove.namespace: acme
+  trove.version: 2.3.4
 ---
 body
 `)
@@ -75,7 +75,7 @@ body
 	}
 }
 
-// Skills authored before the Demigo rebrand use the tandem.* prefix; they must
+// Skills authored before the Trovery rebrand use the tandem.* prefix; they must
 // still resolve via the legacy-key fallback.
 func TestParseFallsBackToLegacyTandemPrefix(t *testing.T) {
 	dir := t.TempDir()
@@ -127,8 +127,8 @@ namespace: legacy
 version: 0.9.0
 description: desc
 metadata:
-  demi.namespace: acme
-  demi.version: 2.3.4
+  trove.namespace: acme
+  trove.version: 2.3.4
 ---
 body
 `)

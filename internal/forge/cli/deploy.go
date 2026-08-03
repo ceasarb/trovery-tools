@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/deploy"
-	sharedconfig "github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/deploy"
+	sharedconfig "github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +22,7 @@ var deployCmd = &cobra.Command{
 	Short: "Generate production deployment artifacts for MCP servers",
 	Long: console.HeaderStyle.Render("Deploy") + "\n\n" +
 		"Generate production-ready deployment artifacts for MCP servers.\n" +
-		"Uses the same targets as 'demi forge agent deploy'.\n\n" +
+		"Uses the same targets as 'trove forge agent deploy'.\n\n" +
 		"Targets:\n" +
 		"  docker           Hardened Dockerfile + docker-compose.yml\n" +
 		"  kubernetes       Helm chart\n" +
@@ -111,11 +111,11 @@ type serverConfigInfo struct {
 	Name string
 }
 
-// loadServerConfig reads the server name from demi.toml in the given directory.
+// loadServerConfig reads the server name from trove.toml in the given directory.
 func loadServerConfig(dir string) (*serverConfigInfo, error) {
 	cfg, err := sharedconfig.LoadServerConfig(dir)
 	if err != nil {
-		return nil, fmt.Errorf("not a valid server directory (missing demi.toml): %w", err)
+		return nil, fmt.Errorf("not a valid server directory (missing trove.toml): %w", err)
 	}
 	return &serverConfigInfo{Name: cfg.Server.Name}, nil
 }

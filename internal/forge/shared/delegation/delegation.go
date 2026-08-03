@@ -13,7 +13,7 @@ import "context"
 // MetaKey is the _meta field key under which the delegated-identity assertion is
 // attached to an MCP tools/call. It is a wire-level interop convention: a tool
 // server that wants delegation reads this key from _meta and verifies the value.
-const MetaKey = "demi.on_behalf_of"
+const MetaKey = "trove.on_behalf_of"
 
 // ctxKey is an unexported context key type so no other package can collide with
 // or overwrite the stored assertion.

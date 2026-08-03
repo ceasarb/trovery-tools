@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
 )
 
 func TestFileWatcher_DetectsFileChange(t *testing.T) {

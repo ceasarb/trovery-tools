@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/server/harness"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -180,7 +180,7 @@ func (ds *DevServer) repl() error {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		fmt.Print(console.HeaderStyle.Render("demi-forge> "))
+		fmt.Print(console.HeaderStyle.Render("trove-forge> "))
 		if !scanner.Scan() {
 			break
 		}

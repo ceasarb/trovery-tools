@@ -13,8 +13,8 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "demi-vigil",
-	Short:   "Demigo Vigil — Secure workspaces for AI-assisted development",
+	Use:     "trove-vigil",
+	Short:   "Trovery Vigil — Secure workspaces for AI-assisted development",
 	Version: Version,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		level := slog.LevelInfo

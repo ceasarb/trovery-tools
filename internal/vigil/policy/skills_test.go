@@ -3,8 +3,8 @@ package policy
 import (
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
-	"github.com/ceasarb/demigo-tools/internal/vigil/skills"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/skills"
 )
 
 func TestSkillPolicyEngine_OpenPolicy(t *testing.T) {

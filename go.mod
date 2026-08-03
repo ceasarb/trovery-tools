@@ -1,4 +1,4 @@
-module github.com/ceasarb/demigo-tools
+module github.com/ceasarb/trovery-tools
 
 go 1.25.0
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 )
 
 type dockerData struct {
@@ -49,12 +49,12 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /demi-forge ./cmd/demi-forge
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /trove-forge ./cmd/trove-forge
 
 # --- Runtime stage ---
 FROM gcr.io/distroless/static-debian12:nonroot
 
-COPY --from=builder /demi-forge /usr/local/bin/demi-forge
+COPY --from=builder /trove-forge /usr/local/bin/trove-forge
 COPY agents/{{ .AgentName }}/ /app/agents/{{ .AgentName }}/
 
 WORKDIR /app
@@ -63,7 +63,7 @@ EXPOSE {{ .Port }}
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["demi-forge", "agent", "serve", "{{ .AgentName }}", "--host", "0.0.0.0", "--port", "{{ .Port }}"]
+ENTRYPOINT ["trove-forge", "agent", "serve", "{{ .AgentName }}", "--host", "0.0.0.0", "--port", "{{ .Port }}"]
 `
 
 const hardenedDockerIgnoreTmpl = `.git
@@ -106,7 +106,7 @@ const hardenedComposeTmpl = `services:
           memory: 256M
           cpus: "1.0"
     healthcheck:
-      test: ["CMD", "/usr/local/bin/demi-forge", "--version"]
+      test: ["CMD", "/usr/local/bin/trove-forge", "--version"]
       interval: 30s
       timeout: 5s
       retries: 3

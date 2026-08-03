@@ -11,10 +11,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const configFileName = ".demi/vigil.yaml"
+const configFileName = ".trove/vigil.yaml"
 
-// ErrConfigNotFound indicates no .demi/vigil.yaml was found.
-var ErrConfigNotFound = errors.New("no .demi/vigil.yaml found — run `demi vigil init` to create one")
+// ErrConfigNotFound indicates no .trove/vigil.yaml was found.
+var ErrConfigNotFound = errors.New("no .trove/vigil.yaml found — run `trove vigil init` to create one")
 
 // ConfigValidationError contains one or more validation issues.
 type ConfigValidationError struct {
@@ -22,10 +22,10 @@ type ConfigValidationError struct {
 }
 
 func (e *ConfigValidationError) Error() string {
-	return "invalid .demi/vigil.yaml:\n  " + strings.Join(e.Issues, "\n  ")
+	return "invalid .trove/vigil.yaml:\n  " + strings.Join(e.Issues, "\n  ")
 }
 
-// FindConfig searches the current directory and parents for .demi/vigil.yaml.
+// FindConfig searches the current directory and parents for .trove/vigil.yaml.
 // Returns the absolute path to the config file.
 func FindConfig() (string, error) {
 	dir, err := os.Getwd()
@@ -49,7 +49,7 @@ func FindConfig() (string, error) {
 	return "", ErrConfigNotFound
 }
 
-// LoadConfig loads and validates a .demi/vigil.yaml file.
+// LoadConfig loads and validates a .trove/vigil.yaml file.
 // If path is empty, it searches upward from cwd.
 func LoadConfig(path string) (*VigilConfig, error) {
 	if path == "" {

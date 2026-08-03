@@ -252,12 +252,12 @@ func TestManagerWithMockVigil(t *testing.T) {
 	mgr := NewManager(vigil)
 	mgr.LoadSkills([]string{dir})
 
-	// Vigil will use the real CheckPolicy which shells out to demi-vigil.
-	// Since demi-vigil is not installed, it will allow by default.
+	// Vigil will use the real CheckPolicy which shells out to trove-vigil.
+	// Since trove-vigil is not installed, it will allow by default.
 	// We test that the flow works without errors.
 	body, err := mgr.ActivateSkill("acme/code-review")
 	if err != nil {
-		// If demi-vigil happens to be installed and blocks, that's fine
+		// If trove-vigil happens to be installed and blocks, that's fine
 		t.Logf("activation result: err=%v", err)
 		return
 	}
@@ -269,11 +269,11 @@ func TestManagerWithMockVigil(t *testing.T) {
 // --- Vigil detection ---
 
 func TestDetectVigilNotInstalled(t *testing.T) {
-	// demi-vigil is almost certainly not installed in test env
+	// trove-vigil is almost certainly not installed in test env
 	// This just tests that detection doesn't crash
 	v := DetectVigil()
 	if v != nil {
-		t.Log("demi-vigil detected — skipping 'not installed' assertion")
+		t.Log("trove-vigil detected — skipping 'not installed' assertion")
 	}
 }
 

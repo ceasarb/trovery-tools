@@ -10,10 +10,10 @@ import (
 
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/dashboard/ws"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/auth"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/ratelimit"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/internal/forge/dashboard/ws"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/auth"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/ratelimit"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
 )
 
 // Server is the dashboard HTTP server providing API endpoints and a static SPA.
@@ -29,7 +29,7 @@ type Server struct {
 }
 
 // New creates a dashboard server rooted at workDir. It opens the eval and session
-// SQLite databases from the .demi/forge/ directory.
+// SQLite databases from the .trove/forge/ directory.
 // Option configures the dashboard server.
 type Option func(*Server)
 
@@ -39,14 +39,14 @@ func WithAuth(cfg *auth.Config) Option {
 }
 
 func New(port int, workDir string, opts ...Option) (*Server, error) {
-	demiDir := filepath.Join(workDir, ".demi/forge")
+	troveDir := filepath.Join(workDir, ".trove/forge")
 
-	evalStore, err := storage.NewEvalStore(filepath.Join(demiDir, "evals.db"))
+	evalStore, err := storage.NewEvalStore(filepath.Join(troveDir, "evals.db"))
 	if err != nil {
 		return nil, fmt.Errorf("open eval store: %w", err)
 	}
 
-	sessStore, err := storage.NewSessionStore(filepath.Join(demiDir, "sessions.db"))
+	sessStore, err := storage.NewSessionStore(filepath.Join(troveDir, "sessions.db"))
 	if err != nil {
 		evalStore.Close()
 		return nil, fmt.Errorf("open session store: %w", err)

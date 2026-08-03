@@ -7,14 +7,14 @@ import (
 	"net/http"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/guardrails"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/metrics"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/provider"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/auth"
-	forgeotel "github.com/ceasarb/demigo-tools/internal/forge/shared/otel"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/ratelimit"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/guardrails"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/metrics"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/auth"
+	forgeotel "github.com/ceasarb/trovery-tools/internal/forge/shared/otel"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/ratelimit"
 )
 
 // Server is an HTTP API server for agent invocation.
@@ -120,7 +120,7 @@ func withCORS(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Expose-Headers", "X-Demi-Cost, X-Demi-Tokens-In, X-Demi-Tokens-Out, X-Demi-Tool-Calls, X-Demi-Budget-Exceeded, X-Demi-Monthly-Remaining")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Trove-Cost, X-Trove-Tokens-In, X-Trove-Tokens-Out, X-Trove-Tool-Calls, X-Trove-Budget-Exceeded, X-Trove-Monthly-Remaining")
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)

@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/provider"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
 )
 
 // RunResult holds the complete outcome of running an eval suite.

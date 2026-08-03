@@ -3,7 +3,7 @@ package adapters
 import (
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
 )
 
 func TestClaudeCodeAdapter_ResolveCommand(t *testing.T) {
@@ -198,7 +198,7 @@ func TestForgeAdapter_ResolveCommand(t *testing.T) {
 	a := &ForgeAdapter{}
 	cfg := config.ToolConfig{AgentPath: "./agents/my-agent"}
 	cmd := a.ResolveCommand(cfg)
-	expected := []string{"demi-forge", "agent", "chat", "./agents/my-agent"}
+	expected := []string{"trove-forge", "agent", "chat", "./agents/my-agent"}
 	if len(cmd) != len(expected) {
 		t.Fatalf("expected %d args, got %d: %v", len(expected), len(cmd), cmd)
 	}

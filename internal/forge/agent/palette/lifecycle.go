@@ -9,8 +9,8 @@ import (
 	"runtime"
 	"time"
 
-	paletteclient "github.com/ceasarb/demigo-tools/internal/forge/palette/go-client"
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
+	paletteclient "github.com/ceasarb/trovery-tools/internal/forge/palette/go-client"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 )
 
 // ViewerProcess wraps a running Palette viewer subprocess.

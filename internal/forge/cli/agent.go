@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	agentcfg "github.com/ceasarb/demigo-tools/internal/forge/agent/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/orchestrator"
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/servermgr"
-	serverconfig "github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/workspace"
+	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/orchestrator"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	serverconfig "github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/workspace"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
@@ -144,8 +144,8 @@ func runAgentCreate(cmd *cobra.Command, args []string) error {
 	console.Dim("  agent.yaml")
 	fmt.Println()
 	console.Info("Next steps:")
-	console.Dim("  demi forge agent add-server " + agentName + " --server ./servers/<server-name>")
-	console.Dim("  demi forge agent chat " + agentName)
+	console.Dim("  trove forge agent add-server " + agentName + " --server ./servers/<server-name>")
+	console.Dim("  trove forge agent chat " + agentName)
 
 	return nil
 }
@@ -258,7 +258,7 @@ func runAgentList(cmd *cobra.Command, args []string) error {
 	}
 
 	if ws == nil {
-		console.Warning("Not inside an Demigo Forge workspace")
+		console.Warning("Not inside an Trovery Forge workspace")
 		return nil
 	}
 
@@ -273,7 +273,7 @@ func runAgentList(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(entries) == 0 {
-		console.Info("No agents found. Run: demi forge agent create")
+		console.Info("No agents found. Run: trove forge agent create")
 		return nil
 	}
 
@@ -333,7 +333,7 @@ func runAgentInspect(cmd *cobra.Command, args []string) error {
 			console.Dim(fmt.Sprintf("  %s (%s)", s.Name, s.Path))
 		}
 	} else if !cfg.IsOrchestrator() {
-		console.Dim("  No servers wired. Run: demi forge agent add-server " + cfg.Name + " --server <path>")
+		console.Dim("  No servers wired. Run: trove forge agent add-server " + cfg.Name + " --server <path>")
 	}
 
 	// Show orchestrator DAG

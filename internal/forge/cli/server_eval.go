@@ -6,11 +6,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/server/eval"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/storage"
-	"github.com/ceasarb/demigo-tools/internal/forge/workspace"
+	"github.com/ceasarb/trovery-tools/internal/forge/server/eval"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/internal/forge/workspace"
 	"github.com/spf13/cobra"
 )
 
@@ -37,7 +37,7 @@ func runServerEval(cmd *cobra.Command, args []string) error {
 	// Load server config to verify we're in a server directory
 	cfg, err := config.LoadServerConfig(cwd)
 	if err != nil {
-		console.Error(fmt.Sprintf("No demi.toml found: %v", err))
+		console.Error(fmt.Sprintf("No trove.toml found: %v", err))
 		console.Dim("  Run this command from inside a server directory")
 		return err
 	}
@@ -47,15 +47,15 @@ func runServerEval(cmd *cobra.Command, args []string) error {
 
 	// Open eval store at workspace root
 	ws, _ := workspace.Find(cwd)
-	var demiDir string
+	var troveDir string
 	if ws != nil {
-		demiDir = filepath.Join(ws.Root, ".demi/forge")
+		troveDir = filepath.Join(ws.Root, ".trove/forge")
 	} else {
-		demiDir = filepath.Join(cwd, ".demi/forge")
+		troveDir = filepath.Join(cwd, ".trove/forge")
 	}
-	dbPath := filepath.Join(demiDir, "eval.db")
-	if err := os.MkdirAll(demiDir, 0o755); err != nil {
-		return fmt.Errorf("create .demi/forge dir: %w", err)
+	dbPath := filepath.Join(troveDir, "eval.db")
+	if err := os.MkdirAll(troveDir, 0o755); err != nil {
+		return fmt.Errorf("create .trove/forge dir: %w", err)
 	}
 
 	store, err := storage.NewEvalStore(dbPath)
@@ -148,7 +148,7 @@ func runServerEval(cmd *cobra.Command, args []string) error {
 			if err != nil {
 				console.Error(fmt.Sprintf("Generate report: %v", err))
 			} else {
-				reportPath := filepath.Join(demiDir, fmt.Sprintf("eval-report-%s.html", result.RunID))
+				reportPath := filepath.Join(troveDir, fmt.Sprintf("eval-report-%s.html", result.RunID))
 				if err := os.WriteFile(reportPath, []byte(html), 0o644); err != nil {
 					console.Error(fmt.Sprintf("Write report: %v", err))
 				} else {

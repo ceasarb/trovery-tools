@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 )
 
 func testConfig() *config.AgentConfig {
@@ -375,14 +375,14 @@ func TestDeployGitHubActions(t *testing.T) {
 	validate := readFile(t, dir, ".github/workflows/validate.yml")
 	assertContains(t, validate, "Validate")
 	assertContains(t, validate, "pull_request")
-	assertContains(t, validate, "demi forge server validate")
-	assertContains(t, validate, "demi forge server test")
+	assertContains(t, validate, "trove forge server validate")
+	assertContains(t, validate, "trove forge server test")
 
 	// Verify eval.yml
 	eval := readFile(t, dir, ".github/workflows/eval.yml")
 	assertContains(t, eval, "Eval")
 	assertContains(t, eval, "push")
-	assertContains(t, eval, "demi forge agent eval")
+	assertContains(t, eval, "trove forge agent eval")
 	assertContains(t, eval, "ANTHROPIC_API_KEY")
 
 	// Verify deploy.yml
@@ -456,8 +456,8 @@ func TestGenerateObservabilityArtifacts(t *testing.T) {
 		t.Fatalf("grafana dashboard is not valid JSON: %v", err)
 	}
 	assertContains(t, dashboard, "test-agent")
-	assertContains(t, dashboard, "demi_requests_total")
-	assertContains(t, dashboard, "demi_cost_usd_total")
+	assertContains(t, dashboard, "trove_requests_total")
+	assertContains(t, dashboard, "trove_cost_usd_total")
 
 	// Verify Prometheus alert rules
 	alerts := readFile(t, dir, "observability/prometheus-alerts.yml")

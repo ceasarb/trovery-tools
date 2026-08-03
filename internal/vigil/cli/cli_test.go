@@ -8,12 +8,12 @@ import (
 	"testing"
 )
 
-// buildBinary builds demi-vigil to a temp location for integration tests.
+// buildBinary builds trove-vigil to a temp location for integration tests.
 func buildBinary(t *testing.T) string {
 	t.Helper()
-	binary := filepath.Join(t.TempDir(), "demi-vigil")
+	binary := filepath.Join(t.TempDir(), "trove-vigil")
 	// Use the module path to build — works regardless of working directory.
-	cmd := exec.Command("go", "build", "-o", binary, "github.com/ceasarb/demigo-tools/cmd/demi-vigil")
+	cmd := exec.Command("go", "build", "-o", binary, "github.com/ceasarb/trovery-tools/cmd/trove-vigil")
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("build failed: %s %v", out, err)
 	}
@@ -71,21 +71,21 @@ func TestIntegration_FullHappyPath(t *testing.T) {
 	binary := buildBinary(t)
 	dir := setupTestProject(t)
 
-	// 1. demi vigil init
+	// 1. trove vigil init
 	out, code := runBinary(t, binary, dir, "init", "test-project")
 	if code != 0 {
 		t.Fatalf("init failed (code %d): %s", code, out)
 	}
-	if !strings.Contains(out, "Created .demi/vigil.yaml") {
-		t.Errorf("expected 'Created .demi/vigil.yaml' in output, got: %s", out)
+	if !strings.Contains(out, "Created .trove/vigil.yaml") {
+		t.Errorf("expected 'Created .trove/vigil.yaml' in output, got: %s", out)
 	}
 
-	// Verify .demi/vigil.yaml exists.
-	if _, err := os.Stat(filepath.Join(dir, ".demi/vigil.yaml")); err != nil {
-		t.Fatal(".demi/vigil.yaml not created")
+	// Verify .trove/vigil.yaml exists.
+	if _, err := os.Stat(filepath.Join(dir, ".trove/vigil.yaml")); err != nil {
+		t.Fatal(".trove/vigil.yaml not created")
 	}
 
-	// 2. demi vigil start
+	// 2. trove vigil start
 	out, code = runBinary(t, binary, dir, "start")
 	if code != 0 {
 		t.Fatalf("start failed (code %d): %s", code, out)
@@ -94,13 +94,13 @@ func TestIntegration_FullHappyPath(t *testing.T) {
 		t.Errorf("expected 'Session started' in output, got: %s", out)
 	}
 
-	// 3. demi vigil run -- echo test
+	// 3. trove vigil run -- echo test
 	out, code = runBinary(t, binary, dir, "run", "echo", "hello-vigil")
 	if code != 0 {
 		t.Fatalf("run failed (code %d): %s", code, out)
 	}
 
-	// 4. demi vigil stop
+	// 4. trove vigil stop
 	out, code = runBinary(t, binary, dir, "stop")
 	if code != 0 {
 		t.Fatalf("stop failed (code %d): %s", code, out)
@@ -109,7 +109,7 @@ func TestIntegration_FullHappyPath(t *testing.T) {
 		t.Errorf("expected 'Session stopped' in output, got: %s", out)
 	}
 
-	// 5. demi vigil log
+	// 5. trove vigil log
 	out, code = runBinary(t, binary, dir, "log")
 	if code != 0 {
 		t.Fatalf("log failed (code %d): %s", code, out)
@@ -118,13 +118,13 @@ func TestIntegration_FullHappyPath(t *testing.T) {
 		t.Errorf("expected 'Session:' in log output, got: %s", out)
 	}
 
-	// 6. demi vigil audit
+	// 6. trove vigil audit
 	out, code = runBinary(t, binary, dir, "audit")
 	if code != 0 {
 		t.Fatalf("audit failed (code %d): %s", code, out)
 	}
 
-	// 7. demi vigil sessions
+	// 7. trove vigil sessions
 	out, code = runBinary(t, binary, dir, "sessions")
 	if code != 0 {
 		t.Fatalf("sessions failed (code %d): %s", code, out)

@@ -10,9 +10,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/config"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/console"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/container"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/container"
 )
 
 // SandboxOpts configures a sandbox run.
@@ -27,7 +27,7 @@ type SandboxOpts struct {
 // Run builds and runs the server in a sandboxed container.
 func Run(opts SandboxOpts) error {
 	serverName := opts.Config.Server.Name
-	imageTag := "demi-forge-sandbox-" + strings.ToLower(serverName)
+	imageTag := "trove-forge-sandbox-" + strings.ToLower(serverName)
 
 	// Detect language
 	lang, err := DetectLanguage(opts.ServerDir)
@@ -46,11 +46,11 @@ func Run(opts SandboxOpts) error {
 	// Generate .dockerignore if not present
 	diPath := filepath.Join(opts.ServerDir, ".dockerignore")
 	if _, err := os.Stat(diPath); os.IsNotExist(err) {
-		os.WriteFile(diPath, []byte(".venv\n.hdx\n.demi/forge\n__pycache__\n*.pyc\nnode_modules\n.git\n"), 0o644)
+		os.WriteFile(diPath, []byte(".venv\n.hdx\n.trove/forge\n__pycache__\n*.pyc\nnode_modules\n.git\n"), 0o644)
 		defer os.Remove(diPath)
 	}
 
-	console.Dim("  Generated Dockerfile.demi")
+	console.Dim("  Generated Dockerfile.trove")
 
 	// Build image
 	console.Info("Building sandbox image...")
@@ -59,8 +59,8 @@ func Run(opts SandboxOpts) error {
 		Dockerfile: dockerfilePath,
 		Tag:        imageTag,
 		Labels: map[string]string{
-			"demi.sandbox": "true",
-			"demi.server":  serverName,
+			"trove.sandbox": "true",
+			"trove.server":  serverName,
 		},
 	}
 
@@ -75,7 +75,7 @@ func Run(opts SandboxOpts) error {
 	// Configure run options from policy
 	runOpts := container.RunOpts{
 		Image:     imageTag,
-		Name:      "demi-forge-sandbox-" + serverName,
+		Name:      "trove-forge-sandbox-" + serverName,
 		MemoryMB:  opts.Policy.MemoryMB,
 		CPUs:      opts.Policy.CPUs,
 		PidsLimit: opts.Policy.PidsLimit,
@@ -83,9 +83,9 @@ func Run(opts SandboxOpts) error {
 		Remove:    true,
 		Detach:    true,
 		Labels: map[string]string{
-			"demi.sandbox": "true",
-			"demi.server":  serverName,
-			"demi.policy":  opts.Policy.Name,
+			"trove.sandbox": "true",
+			"trove.server":  serverName,
+			"trove.policy":  opts.Policy.Name,
 		},
 		Env: map[string]string{},
 	}

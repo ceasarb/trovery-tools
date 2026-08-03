@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/delegation"
-	"github.com/ceasarb/demigo-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/delegation"
+	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
 )
 
 // Client is an MCP stdio client that talks to a server subprocess.
@@ -81,7 +81,7 @@ func (c *Client) Initialize(ctx context.Context) (*protocol.InitializeResult, er
 	params := protocol.InitializeParams{
 		ProtocolVersion: "2025-03-26",
 		ClientInfo: protocol.ClientInfo{
-			Name:    "demi-forge-test",
+			Name:    "trove-forge-test",
 			Version: "0.1.0",
 		},
 	}

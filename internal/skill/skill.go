@@ -8,17 +8,19 @@
 package skill
 
 // Metadata keys for this platform's harness config, namespaced under a
-// dotted `demi.*` prefix so they don't collide with other clients writing
+// dotted `trove.*` prefix so they don't collide with other clients writing
 // into the spec's shared metadata map (ADR-003).
 const (
-	MetaNamespace = "demi.namespace"
-	MetaVersion   = "demi.version"
+	MetaNamespace = "trove.namespace"
+	MetaVersion   = "trove.version"
+)
 
-	// Legacy keys read as a fallback for skills authored before the Demigo
-	// rebrand, when the prefix was tandem.*. We emit demi.* but still read
-	// tandem.* so pre-rebrand SKILL.md files keep resolving.
-	legacyMetaNamespace = "tandem.namespace"
-	legacyMetaVersion   = "tandem.version"
+// Legacy keys read as a fallback for skills authored before a rebrand, newest
+// prefix first: demi.* (the Demigo era), then tandem.* before that. We emit
+// trove.* but still read both, so older SKILL.md files keep resolving.
+var (
+	legacyMetaNamespace = []string{"demi.namespace", "tandem.namespace"}
+	legacyMetaVersion   = []string{"demi.version", "tandem.version"}
 )
 
 // Skill is the parsed representation of a SKILL.md file: its frontmatter
@@ -30,11 +32,11 @@ type Skill struct {
 	Tags        []string `yaml:"tags"`
 
 	// Metadata is the spec's optional string→string map. Harness config rides
-	// here under demi.* keys (ADR-003); Namespace and Version are resolved
+	// here under trove.* keys (ADR-003); Namespace and Version are resolved
 	// from it after parsing.
 	Metadata map[string]string `yaml:"metadata"`
 
-	// Namespace and Version are resolved from Metadata's demi.* keys (or the
+	// Namespace and Version are resolved from Metadata's trove.* keys (or the
 	// legacy tandem.* keys), falling back to legacy top-level
 	// `namespace:`/`version:` frontmatter. Not unmarshalled directly — see resolveMetadata.
 	Namespace string `yaml:"-"`

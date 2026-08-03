@@ -3,8 +3,8 @@ package policy
 import (
 	"fmt"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
 )
 
 // PolicyEngine orchestrates all policy checks.

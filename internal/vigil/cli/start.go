@@ -3,9 +3,9 @@ package cli
 import (
 	"fmt"
 
-	"github.com/ceasarb/demigo-tools/internal/vigil/config"
-	"github.com/ceasarb/demigo-tools/internal/vigil/session"
-	"github.com/ceasarb/demigo-tools/internal/vigil/shared/console"
+	"github.com/ceasarb/trovery-tools/internal/vigil/config"
+	"github.com/ceasarb/trovery-tools/internal/vigil/session"
+	"github.com/ceasarb/trovery-tools/internal/vigil/shared/console"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +38,7 @@ func runStart(cmd *cobra.Command, args []string) error {
 	if startTool != "" {
 		tc, ok := cfg.Tools[startTool]
 		if !ok {
-			return fmt.Errorf("unknown tool %q — not defined in .demi/vigil.yaml", startTool)
+			return fmt.Errorf("unknown tool %q — not defined in .trove/vigil.yaml", startTool)
 		}
 		if !tc.Enabled {
 			reason := "no reason given"
@@ -96,7 +96,7 @@ func runStart(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Println()
-	console.Dim("Run demi vigil run <tool> to launch a tool.")
+	console.Dim("Run trove vigil run <tool> to launch a tool.")
 
 	return nil
 }

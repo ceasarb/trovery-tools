@@ -1,9 +1,9 @@
 package skills
 
-import "github.com/ceasarb/demigo-tools/internal/skill"
+import "github.com/ceasarb/trovery-tools/internal/skill"
 
-// The SKILL.md parser lives in the shared internal/skill package so demi-forge and
-// demi-vigil parse identically (ADR-006). Skill and ParseSkill re-export it, keeping
+// The SKILL.md parser lives in the shared internal/skill package so trove-forge and
+// trove-vigil parse identically (ADR-006). Skill and ParseSkill re-export it, keeping
 // this package's existing API — validation, packing, and activation below still
 // operate on *Skill.
 type Skill = skill.Skill
