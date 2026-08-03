@@ -15,4 +15,8 @@ coverage.txt
 .DS_Store
 
 # Private decision records (PDRs/ADRs) — working artifacts, not for the OSS repo
-.claude/
+.claude/*
+!.claude/docs/
+.claude/docs/*
+# Binding manifest is tracked — the cross-check in trovery:adr-008 depends on it
+!.claude/docs/trove.yaml
