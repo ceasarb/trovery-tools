@@ -2,7 +2,9 @@
 
 ### In tandem with AI.
 
-*Pronounced **DEM-ee-go** — "Trove," your companion, ready to go.*
+*Pronounced **TROH-ver-ee** — a trovery is where troves are kept. Bakery, brewery, trovery.*
+
+> **Formerly Demigo Tools.** Renamed to Trovery Tools in 2026, along with the `demi` CLI, which is now `trove`. Existing links and clone URLs still resolve.
 
 [![CI](https://github.com/ceasarb/trovery-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/ceasarb/trovery-tools/actions/workflows/ci.yml)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/ceasarb/trovery-tools)](go.mod)
