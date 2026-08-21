@@ -9,6 +9,7 @@ import (
 
 	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
 	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
+	"github.com/ceasarb/trovery-tools/internal/forge/agent/security"
 	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
 	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
 )
@@ -478,6 +479,31 @@ func (s *Session) executeToolsParallel(ctx context.Context, toolUses []provider.
 	return results
 }
 
+// maxToolResultBytes caps how much of a single tool result enters the message
+// list. It matches the session store's own 50KB content cap so the recorded copy
+// and the model-facing copy agree rather than diverging at the boundary.
+const maxToolResultBytes = 50 * 1024
+
+// prepareToolResult makes third-party tool output safe to append to the message
+// list, returning the display form and the model-facing form.
+//
+// Sanitization is unconditional: a tool result is untrusted data from a server we
+// do not control, and stripping zero-width, bidi-override, and control characters
+// costs nothing legitimate. Fencing is gated on security.fence_tool_results
+// (default true) because it changes what the model actually reads.
+//
+// The display form stays unfenced — the delimiters are there to mark a trust
+// boundary for the model, and they are noise for a human reader and for the
+// session record.
+func (s *Session) prepareToolResult(toolName, raw string) (display, model string) {
+	display = security.SanitizeToolResult(raw, maxToolResultBytes)
+	model = display
+	if s.Config.Security.ShouldFenceTools() {
+		model = security.FenceToolResult(toolName, display)
+	}
+	return display, model
+}
+
 // executeSingleTool executes one tool call and returns the result content.
 func (s *Session) executeSingleTool(ctx context.Context, tu provider.Content) provider.Content {
 	s.ToolCalls++
@@ -500,6 +526,12 @@ func (s *Session) executeSingleTool(ctx context.Context, tu provider.Content) pr
 			}
 		}
 	}
+
+	// Sanitize and fence before any of it is shown, recorded, or sent to the
+	// model. Errors go through the same path: the message can embed text the
+	// server chose, so it is no more trusted than a success result.
+	var modelText string
+	resultText, modelText = s.prepareToolResult(tu.Name, resultText)
 
 	// Show inline result
 	summary := resultText
@@ -525,7 +557,7 @@ func (s *Session) executeSingleTool(ctx context.Context, tu provider.Content) pr
 	return provider.Content{
 		Type:      "tool_result",
 		ToolUseID: tu.ID,
-		Content:   resultText,
+		Content:   modelText,
 	}
 }
 
