@@ -8,9 +8,9 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/runtime"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/servermgr"
 	"github.com/ceasarb/trovery-tools/internal/forge/dashboard/ws"
 )
 

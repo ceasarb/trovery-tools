@@ -13,7 +13,7 @@ import (
 	"github.com/ceasarb/trovery-tools/internal/forge/dashboard/ws"
 	"github.com/ceasarb/trovery-tools/internal/forge/shared/auth"
 	"github.com/ceasarb/trovery-tools/internal/forge/shared/ratelimit"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/storage"
 )
 
 // Server is the dashboard HTTP server providing API endpoints and a static SPA.

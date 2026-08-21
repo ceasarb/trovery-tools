@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/protocol"
 )
 
 var snakeCaseRe = regexp.MustCompile(`^[a-z][a-z0-9]*(_[a-z0-9]+)*$`)

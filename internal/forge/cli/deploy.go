@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 	"github.com/ceasarb/trovery-tools/internal/forge/agent/deploy"
-	sharedconfig "github.com/ceasarb/trovery-tools/internal/forge/shared/config"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	sharedconfig "github.com/ceasarb/trovery-tools/pkg/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/console"
 	"github.com/spf13/cobra"
 )
 

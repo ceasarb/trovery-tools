@@ -1,6 +1,6 @@
 package validate
 
-import "github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
+import "github.com/ceasarb/trovery-tools/pkg/forge/shared/protocol"
 
 // Severity indicates how critical a rule violation is.
 type Severity string

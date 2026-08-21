@@ -3,12 +3,12 @@ package cli
 import (
 	"context"
 
-	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 	"github.com/ceasarb/trovery-tools/internal/forge/agent/agenttool"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/provider"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/runtime"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/servermgr"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/protocol"
 )
 
 // agentToolWirer implements servermgr.AgentToolWirer using agenttool.Server.

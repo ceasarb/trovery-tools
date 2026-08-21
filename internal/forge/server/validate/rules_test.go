@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/protocol"
 )
 
 // helper to run a single rule against a tool and return violations

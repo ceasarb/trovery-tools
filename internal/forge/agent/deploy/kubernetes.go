@@ -3,7 +3,7 @@ package deploy
 import (
 	"fmt"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 )
 
 type helmData struct {

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	paletteclient "github.com/ceasarb/trovery-tools/internal/forge/palette/go-client"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/protocol"
 )
 
 // ToolProvider wraps a Palette WebSocket client as MCP tools.

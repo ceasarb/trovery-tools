@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/storage"
 )
 
 // testServer creates a dashboard Server backed by a temp workspace with

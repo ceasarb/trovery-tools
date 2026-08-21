@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/config"
 )
 
 // Entry represents a single server in the registry index.

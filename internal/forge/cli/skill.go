@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 	"github.com/ceasarb/trovery-tools/internal/forge/agent/skills"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/console"
 	"github.com/ceasarb/trovery-tools/internal/forge/workspace"
 	"github.com/spf13/cobra"
 )

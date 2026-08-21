@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
+	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/provider"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/runtime"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/servermgr"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/protocol"
 )
 
 const DefaultMaxDepth = 3

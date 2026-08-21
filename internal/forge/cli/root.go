@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/console"
 	"github.com/spf13/cobra"
 )
 

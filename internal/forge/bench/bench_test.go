@@ -11,11 +11,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 	"github.com/ceasarb/trovery-tools/internal/forge/agent/deploy"
-	agentruntime "github.com/ceasarb/trovery-tools/internal/forge/agent/runtime"
+	agentruntime "github.com/ceasarb/trovery-tools/pkg/forge/agent/runtime"
 	"github.com/ceasarb/trovery-tools/internal/forge/server/scaffold"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/storage"
 	"github.com/ceasarb/trovery-tools/internal/forge/shared/templates"
 )
 

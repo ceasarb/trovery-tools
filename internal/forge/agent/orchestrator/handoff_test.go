@@ -3,7 +3,7 @@ package orchestrator
 import (
 	"testing"
 
-	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 )
 
 func TestValidateHandoffNoSchema(t *testing.T) {

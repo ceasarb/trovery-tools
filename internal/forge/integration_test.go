@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/session"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/session"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/storage"
 )
 
 // Integration tests covering the full CRAWL workflow.

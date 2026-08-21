@@ -10,7 +10,7 @@ import (
 	"time"
 
 	paletteclient "github.com/ceasarb/trovery-tools/internal/forge/palette/go-client"
-	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 )
 
 // ViewerProcess wraps a running Palette viewer subprocess.

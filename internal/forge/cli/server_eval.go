@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 
 	"github.com/ceasarb/trovery-tools/internal/forge/server/eval"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/storage"
 	"github.com/ceasarb/trovery-tools/internal/forge/workspace"
 	"github.com/spf13/cobra"
 )

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/server/sandbox"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/container"
+	"github.com/ceasarb/trovery-tools/pkg/forge/server/sandbox"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/container"
 	"github.com/spf13/cobra"
 )
 

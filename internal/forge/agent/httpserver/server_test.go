@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	agentcfg "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/guardrails"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/provider"
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/servermgr"
+	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/guardrails"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/provider"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/servermgr"
 )
 
 // mockProvider implements provider.Provider for testing.

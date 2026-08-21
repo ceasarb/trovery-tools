@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	agentconfig "github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	agentconfig "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 )
 
 type agentListItem struct {

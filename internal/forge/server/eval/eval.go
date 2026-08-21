@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/pkg/forge/server/harness"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/storage"
 	"github.com/google/uuid"
 )
 

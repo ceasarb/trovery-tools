@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/storage"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/storage"
 )
 
 type sessionListItem struct {

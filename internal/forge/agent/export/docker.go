@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/agent/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 )
 
 const dockerfileTmpl = `FROM python:3.13-slim

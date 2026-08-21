@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/server/harness"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/config"
 )
 
 type toolListItem struct {

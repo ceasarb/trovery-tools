@@ -11,10 +11,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ceasarb/trovery-tools/internal/forge/server/harness"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/config"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/console"
-	"github.com/ceasarb/trovery-tools/internal/forge/shared/protocol"
+	"github.com/ceasarb/trovery-tools/pkg/forge/server/harness"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/config"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/console"
+	"github.com/ceasarb/trovery-tools/pkg/forge/shared/protocol"
 	"github.com/fsnotify/fsnotify"
 )
 
