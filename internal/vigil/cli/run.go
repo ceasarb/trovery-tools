@@ -113,8 +113,13 @@ func runRun(cmd *cobra.Command, args []string) error {
 	}()
 	defer signal.Stop(sigCh)
 
-	// Run the tool.
-	toolRun, err := adapter.Run(toolCfg, nil)
+	// Run the tool, passing anything after the tool name through to it
+	// (e.g. `trove vigil run lumi polish this note`).
+	var extraArgs []string
+	if len(genericCmd) == 0 && len(args) > 1 {
+		extraArgs = args[1:]
+	}
+	toolRun, err := adapter.Run(toolCfg, extraArgs)
 	if err != nil {
 		console.Error(fmt.Sprintf("Tool error: %v", err))
 		// Still record the run.

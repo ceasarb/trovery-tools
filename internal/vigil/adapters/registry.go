@@ -6,6 +6,7 @@ var Registry = map[string]Adapter{
 	"codex":        &CodexAdapter{},
 	"cursor":       &CursorAdapter{},
 	"forge-agent":  &ForgeAdapter{},
+	"lumi":         &LumiAdapter{},
 }
 
 // ResolveAdapter returns the appropriate adapter for a tool name.

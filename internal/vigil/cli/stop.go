@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ceasarb/trovery-tools/internal/vigil/policy"
+	"github.com/ceasarb/trovery-tools/internal/vigil/receipt"
 	"github.com/ceasarb/trovery-tools/internal/vigil/session"
 	"github.com/ceasarb/trovery-tools/internal/vigil/shared/console"
 	"github.com/spf13/cobra"
@@ -77,7 +78,46 @@ func runStop(cmd *cobra.Command, args []string) error {
 	}
 
 	printSessionSummary(s)
+	printLumiReceipt(s)
 	return nil
+}
+
+// printLumiReceipt emits the receipt for a Lumi run recorded during this
+// session (PDR-010). Best-effort: a session summary should never fail because
+// the receipt could not be read.
+func printLumiReceipt(s *session.Session) {
+	ranLumi := false
+	for _, tr := range s.ToolRuns {
+		if tr.Tool == "lumi" {
+			ranLumi = true
+			break
+		}
+	}
+	if !ranLumi {
+		return
+	}
+
+	store, err := receipt.OpenLumi(receipt.DefaultLumiStore())
+	if err != nil {
+		console.Warning(fmt.Sprintf("Session ran lumi but no receipt could be read: %v", err))
+		return
+	}
+	defer store.Close()
+
+	r, err := store.LatestRun()
+	if err != nil {
+		console.Warning(fmt.Sprintf("Session ran lumi but no receipt could be read: %v", err))
+		return
+	}
+	// Only certify a run the harness recorded during this session's window —
+	// an older run's receipt attached to this session would misattribute it.
+	if r.At.Before(s.StartTime) {
+		console.Warning("Session ran lumi but the harness recorded no run during it (no receipt).")
+		return
+	}
+
+	fmt.Println()
+	fmt.Print(receipt.RenderText(r))
 }
 
 func printSessionSummary(s *session.Session) {
