@@ -14,11 +14,6 @@ coverage.txt
 # Editor / OS
 .DS_Store
 
-# Private decision records (PDRs/ADRs) — working artifacts, not for the OSS repo
-.claude/*
-!.claude/docs/
-.claude/docs/*
-# Tracked: the binding manifest, and the repo-scope decision records.
-# Still ignored: views/, retros/, _site/, findings/ — generated or working artifacts.
-!.claude/docs/trove.yaml
-!.claude/docs/decisions/
+# Private working artifacts (decision records, views, findings) — kept local,
+# not published in the OSS repo.
+.claude/
