@@ -75,7 +75,7 @@ func TestCreateMessage(t *testing.T) {
 	defer server.Close()
 
 	// Override the API URL for testing by using a custom provider
-	p := &Provider{apiKey: "test-key"}
+	p := &Provider{apiKey: "test-key", client: http.DefaultClient, baseURL: apiURL}
 	origURL := apiURL
 
 	// We need to hit our mock server, so we'll use doRequest directly
@@ -288,7 +288,7 @@ data: {"choices":[{"delta":{"content":" world"}}]}
 data: [DONE]
 
 `
-	p := &Provider{apiKey: "test"}
+	p := &Provider{apiKey: "test", client: http.DefaultClient, baseURL: apiURL}
 	var texts []string
 	var gotDone bool
 
@@ -336,7 +336,7 @@ data: {"choices":[],"usage":{"prompt_tokens":15,"completion_tokens":8}}
 data: [DONE]
 
 `
-	p := &Provider{apiKey: "test"}
+	p := &Provider{apiKey: "test", client: http.DefaultClient, baseURL: apiURL}
 	var toolStarts []string
 
 	result, err := p.parseSSE(
@@ -379,7 +379,7 @@ data: {"choices":[{"delta":{"tool_calls":[{"index":1,"function":{"arguments":"{\
 data: [DONE]
 
 `
-	p := &Provider{apiKey: "test"}
+	p := &Provider{apiKey: "test", client: http.DefaultClient, baseURL: apiURL}
 	var toolStarts []string
 
 	result, err := p.parseSSE(
@@ -434,7 +434,7 @@ func TestCreateMessageWithMockServer(t *testing.T) {
 
 	// We can't easily override apiURL in the existing code, so we test via doRequest
 	// which is the core HTTP logic. The mock server validates the flow.
-	p := &Provider{apiKey: "test-key"}
+	p := &Provider{apiKey: "test-key", client: http.DefaultClient, baseURL: apiURL}
 
 	body, _ := json.Marshal(apiRequest{
 		Model: "gpt-4o",
@@ -464,7 +464,7 @@ func TestAPIErrorHandling(t *testing.T) {
 	}))
 	defer server.Close()
 
-	p := &Provider{apiKey: "test-key"}
+	p := &Provider{apiKey: "test-key", client: http.DefaultClient, baseURL: apiURL}
 
 	origTransport := http.DefaultTransport
 	http.DefaultTransport = newTestTransport(server.URL)
@@ -487,7 +487,7 @@ func TestStreamErrorResponse(t *testing.T) {
 	}))
 	defer server.Close()
 
-	p := &Provider{apiKey: "bad-key"}
+	p := &Provider{apiKey: "bad-key", client: http.DefaultClient, baseURL: apiURL}
 
 	origTransport := http.DefaultTransport
 	http.DefaultTransport = newTestTransport(server.URL)

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 	"github.com/ceasarb/trovery-tools/pkg/forge/agent/provider"
@@ -30,10 +31,12 @@ func New() (*Provider, error) {
 	}
 	// Strip trailing slash
 	host = strings.TrimRight(host, "/")
-
+	// Local generation on modest hardware can legitimately take a long time,
+	// so the backstop is very generous — but a wedged local server still
+	// cannot hang the caller forever.
 	return &Provider{
 		host:   host,
-		client: http.DefaultClient,
+		client: provider.NewHTTPClient(30 * time.Minute),
 	}, nil
 }
 

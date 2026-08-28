@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	agentcfg "github.com/ceasarb/trovery-tools/pkg/forge/agent/config"
 	"github.com/ceasarb/trovery-tools/pkg/forge/agent/provider"
@@ -16,18 +17,32 @@ import (
 
 const apiURL = "https://api.openai.com/v1/chat/completions"
 
+// defaultTimeout bounds one whole request attempt, streaming reads included.
+// Generous on purpose — a long streamed generation is legitimate — but
+// finite, so a stalled connection cannot hang the caller forever (the
+// Provider interface carries no context to cancel with).
+const defaultTimeout = 10 * time.Minute
+
 // Provider implements the OpenAI API.
 type Provider struct {
-	apiKey string
+	apiKey  string
+	client  *http.Client
+	baseURL string
 }
 
 // New creates a new OpenAI provider.
 func New() (*Provider, error) {
+	return NewWithClient(provider.NewHTTPClient(defaultTimeout))
+}
+
+// NewWithClient creates a provider with a custom HTTP client, for callers
+// that need their own timeout policy (and for tests).
+func NewWithClient(client *http.Client) (*Provider, error) {
 	key := os.Getenv("OPENAI_API_KEY")
 	if key == "" {
 		return nil, fmt.Errorf("OPENAI_API_KEY not set")
 	}
-	return &Provider{apiKey: key}, nil
+	return &Provider{apiKey: key, client: client, baseURL: apiURL}, nil
 }
 
 // OpenAI request/response types
@@ -158,14 +173,14 @@ func (p *Provider) CreateMessageStream(messages []provider.Message, tools []prov
 		return nil, err
 	}
 
-	httpReq, err := http.NewRequest("POST", apiURL, bytes.NewReader(body))
+	httpReq, err := http.NewRequest("POST", p.baseURL, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", "Bearer "+p.apiKey)
 
-	httpResp, err := http.DefaultClient.Do(httpReq)
+	httpResp, err := p.client.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("api request: %w", err)
 	}
@@ -180,14 +195,14 @@ func (p *Provider) CreateMessageStream(messages []provider.Message, tools []prov
 }
 
 func (p *Provider) doRequest(body []byte) (*apiResponse, error) {
-	httpReq, err := http.NewRequest("POST", apiURL, bytes.NewReader(body))
+	httpReq, err := http.NewRequest("POST", p.baseURL, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", "Bearer "+p.apiKey)
 
-	resp, err := http.DefaultClient.Do(httpReq)
+	resp, err := p.client.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("api request: %w", err)
 	}

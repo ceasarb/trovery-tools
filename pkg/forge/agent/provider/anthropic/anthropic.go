@@ -19,27 +19,42 @@ import (
 const (
 	apiURL     = "https://api.anthropic.com/v1/messages"
 	maxRetries = 3
+
+	// defaultTimeout bounds one whole request attempt, streaming reads
+	// included. Generous on purpose — a long streamed generation is
+	// legitimate — but finite, so a stalled connection cannot hang the
+	// caller forever (the Provider interface carries no context to cancel
+	// with).
+	defaultTimeout = 10 * time.Minute
 )
 
 // Provider implements the Anthropic API.
 type Provider struct {
-	apiKey string
+	apiKey  string
+	client  *http.Client
+	baseURL string
 }
 
 // New creates a new Anthropic provider.
 func New() (*Provider, error) {
+	return NewWithClient(provider.NewHTTPClient(defaultTimeout))
+}
+
+// NewWithClient creates a provider with a custom HTTP client, for callers
+// that need their own timeout policy (and for tests).
+func NewWithClient(client *http.Client) (*Provider, error) {
 	key := os.Getenv("ANTHROPIC_API_KEY")
 	if key == "" {
 		return nil, fmt.Errorf("ANTHROPIC_API_KEY not set")
 	}
-	return &Provider{apiKey: key}, nil
+	return &Provider{apiKey: key, client: client, baseURL: apiURL}, nil
 }
 
 // doRequest executes an HTTP request with retry on 429/529 status codes.
 // Returns the response body reader (caller must close) or an error.
 func (p *Provider) doRequest(body []byte) (*http.Response, error) {
 	for attempt := 0; attempt <= maxRetries; attempt++ {
-		httpReq, err := http.NewRequest("POST", apiURL, bytes.NewReader(body))
+		httpReq, err := http.NewRequest("POST", p.baseURL, bytes.NewReader(body))
 		if err != nil {
 			return nil, err
 		}
@@ -47,7 +62,7 @@ func (p *Provider) doRequest(body []byte) (*http.Response, error) {
 		httpReq.Header.Set("x-api-key", p.apiKey)
 		httpReq.Header.Set("anthropic-version", "2023-06-01")
 
-		resp, err := http.DefaultClient.Do(httpReq)
+		resp, err := p.client.Do(httpReq)
 		if err != nil {
 			return nil, fmt.Errorf("api request: %w", err)
 		}
