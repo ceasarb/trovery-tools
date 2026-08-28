@@ -186,8 +186,9 @@ func (c *Client) dial(ctx context.Context) error {
 		h()
 	}
 
-	// Start read loop
-	go c.readLoop()
+	// Start read loop, bound to this connection — it must never read the
+	// shared c.conn, which Close and reconnect rewrite concurrently.
+	go c.readLoop(conn)
 
 	return nil
 }
@@ -215,8 +216,12 @@ func (c *Client) Close() {
 		c.mu.Unlock()
 
 		if conn != nil {
+			// writeMu serializes this close frame with in-flight sends —
+			// gorilla/websocket allows at most one concurrent writer.
+			c.writeMu.Lock()
 			conn.WriteMessage(websocket.CloseMessage,
 				websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+			c.writeMu.Unlock()
 			conn.Close()
 		}
 	})
@@ -426,18 +431,21 @@ func (c *Client) OnError(handler func(error)) func() {
 
 // --- Internal ---
 
-func (c *Client) readLoop() {
+func (c *Client) readLoop(conn *websocket.Conn) {
 	defer func() {
+		// Tear down shared state only if this loop's connection is still the
+		// current one — after a reconnect, an obsolete loop exiting must not
+		// nil out the new connection or trigger another reconnect.
 		c.mu.Lock()
-		wasConnected := c.state == Connected
-		c.state = Disconnected
-		conn := c.conn
-		c.conn = nil
+		current := c.conn == conn
+		wasConnected := current && c.state == Connected
+		if current {
+			c.conn = nil
+			c.state = Disconnected
+		}
 		c.mu.Unlock()
 
-		if conn != nil {
-			conn.Close()
-		}
+		conn.Close()
 
 		if wasConnected {
 			c.mu.Lock()
@@ -455,7 +463,7 @@ func (c *Client) readLoop() {
 	}()
 
 	for {
-		_, data, err := c.conn.ReadMessage()
+		_, data, err := conn.ReadMessage()
 		if err != nil {
 			// Check if this is a normal close
 			select {
