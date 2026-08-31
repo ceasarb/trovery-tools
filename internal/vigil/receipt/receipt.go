@@ -58,7 +58,21 @@ type Receipt struct {
 	ActualUSD     float64 // effective cost: retries and escalations included
 	OverheadUSD   float64 // planning + classification share of actual
 	PolicyVersion string
+
+	// Kit provenance: what the run executed under, when a kit was involved.
+	//
+	// Empty for a run that used no kit, and empty for a store written by a
+	// Lumi that predates these columns — the witness reports what the record
+	// holds and never fills a gap in with a guess.
+	Kit        string // installed kit name
+	KitVersion string // version from its manifest
+	KitHash    string // content hash approved at install
+	Servers    string // servers the run attached, comma-separated
+	Grants     string // capabilities the kit was approved for
 }
+
+// UnderKit reports whether this run has kit provenance recorded.
+func (r Receipt) UnderKit() bool { return r.Kit != "" }
 
 // Outcome is the one-line verdict the engine's flags support.
 func (r Receipt) Outcome() string {

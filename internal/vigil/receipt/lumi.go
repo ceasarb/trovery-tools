@@ -50,10 +50,44 @@ func (s *LumiStore) Close() error { return s.db.Close() }
 const runColumns = `id, at, request, steps, forecast_usd, actual_usd,
 	overhead_usd, policy_version, attendance, met, held`
 
+// kitColumns are recorded by newer Lumi versions. A witness reads whatever the
+// record holds: an older store simply has no kit provenance, which is a fact
+// about that run and not an error to raise at whoever asks for the receipt.
+const kitColumns = `kit, kit_version, kit_hash, servers, grants`
+
+// hasKitColumns reports whether this store records kit provenance.
+func (s *LumiStore) hasKitColumns() bool {
+	rows, err := s.db.Query(`PRAGMA table_info(runs)`)
+	if err != nil {
+		return false
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var cid int
+		var name, ctype string
+		var notnull, pk int
+		var dflt sql.NullString
+		if err := rows.Scan(&cid, &name, &ctype, &notnull, &dflt, &pk); err != nil {
+			return false
+		}
+		if name == "kit" {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *LumiStore) columns() string {
+	if s.hasKitColumns() {
+		return runColumns + ", " + kitColumns
+	}
+	return runColumns
+}
+
 // Run loads one run by id.
 func (s *LumiStore) Run(id int64) (Receipt, error) {
 	row := s.db.QueryRow(
-		`SELECT `+runColumns+` FROM runs WHERE id = ?`, id)
+		`SELECT `+s.columns()+` FROM runs WHERE id = ?`, id)
 	r, err := s.scanRun(row)
 	if err == sql.ErrNoRows {
 		return Receipt{}, fmt.Errorf("receipt: no run %d in %s", id, s.path)
@@ -64,7 +98,7 @@ func (s *LumiStore) Run(id int64) (Receipt, error) {
 // LatestRun loads the most recent run.
 func (s *LumiStore) LatestRun() (Receipt, error) {
 	row := s.db.QueryRow(
-		`SELECT ` + runColumns + ` FROM runs ORDER BY id DESC LIMIT 1`)
+		`SELECT ` + s.columns() + ` FROM runs ORDER BY id DESC LIMIT 1`)
 	r, err := s.scanRun(row)
 	if err == sql.ErrNoRows {
 		return Receipt{}, fmt.Errorf("receipt: no runs recorded in %s", s.path)
@@ -76,9 +110,20 @@ func (s *LumiStore) scanRun(row *sql.Row) (Receipt, error) {
 	var r Receipt
 	var at string
 	var met, held int
-	err := row.Scan(&r.RunID, &at, &r.Request, &r.Steps,
-		&r.ForecastUSD, &r.ActualUSD, &r.OverheadUSD,
-		&r.PolicyVersion, &r.Attendance, &met, &held)
+	var err error
+	if s.hasKitColumns() {
+		var kit, kitVersion, kitHash, servers, grants sql.NullString
+		err = row.Scan(&r.RunID, &at, &r.Request, &r.Steps,
+			&r.ForecastUSD, &r.ActualUSD, &r.OverheadUSD,
+			&r.PolicyVersion, &r.Attendance, &met, &held,
+			&kit, &kitVersion, &kitHash, &servers, &grants)
+		r.Kit, r.KitVersion, r.KitHash = kit.String, kitVersion.String, kitHash.String
+		r.Servers, r.Grants = servers.String, grants.String
+	} else {
+		err = row.Scan(&r.RunID, &at, &r.Request, &r.Steps,
+			&r.ForecastUSD, &r.ActualUSD, &r.OverheadUSD,
+			&r.PolicyVersion, &r.Attendance, &met, &held)
+	}
 	if err != nil {
 		return Receipt{}, err
 	}

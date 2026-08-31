@@ -33,12 +33,46 @@ func Start(ctx context.Context, command string, args []string, dir string) (*Cli
 // StartWithEnv spawns the server process with additional environment variables.
 // Extra env vars are appended to the current process environment (overriding duplicates).
 func StartWithEnv(ctx context.Context, command string, args []string, dir string, extraEnv []string) (*Client, error) {
+	return StartWithOptions(ctx, command, args, dir, Options{Env: extraEnv})
+}
+
+// Options configures how a server subprocess is spawned.
+type Options struct {
+	// Env is environment for the server process.
+	Env []string
+
+	// CleanEnv replaces the parent environment rather than extending it.
+	//
+	// A sandboxed server is granted a set of capabilities, and the ambient
+	// environment is not among them: the process that spawns a tool server may
+	// hold API keys, tokens and session state that the server was never
+	// declared to need. Extending is the right default for a local development
+	// harness and the wrong one for anything running untrusted code, so the
+	// caller states which it is.
+	//
+	// Env is the whole environment when this is set. A server that needs PATH
+	// or HOME must be given them explicitly, which is the point.
+	CleanEnv bool
+}
+
+// applyEnv sets a command's environment according to the options.
+func applyEnv(cmd *exec.Cmd, opts Options) {
+	switch {
+	case opts.CleanEnv:
+		// Never nil: a nil cmd.Env means "inherit", which is the opposite of
+		// what was asked for. An empty non-nil slice means "empty environment".
+		cmd.Env = append([]string{}, opts.Env...)
+	case len(opts.Env) > 0:
+		cmd.Env = append(os.Environ(), opts.Env...)
+	}
+}
+
+// StartWithOptions spawns the server process under the given options.
+func StartWithOptions(ctx context.Context, command string, args []string, dir string, opts Options) (*Client, error) {
 	cmd := exec.CommandContext(ctx, command, args...)
 	cmd.Dir = dir
 
-	if len(extraEnv) > 0 {
-		cmd.Env = append(os.Environ(), extraEnv...)
-	}
+	applyEnv(cmd, opts)
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {

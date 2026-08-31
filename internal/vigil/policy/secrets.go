@@ -1,7 +1,6 @@
 package policy
 
 import (
-	"bufio"
 	"fmt"
 	"log/slog"
 	"os"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/ceasarb/trovery-tools/internal/vigil/config"
 	"github.com/ceasarb/trovery-tools/internal/vigil/session"
+	vigilpolicy "github.com/ceasarb/trovery-tools/pkg/vigil/policy"
 	"gopkg.in/yaml.v3"
 )
 
@@ -98,29 +98,30 @@ func (s *SecretsScanner) ScanFiles(changes []session.FileChange, projectRoot str
 	return violations
 }
 
-// ScanContent scans a string for secret patterns (for testing).
+// ScanContent scans a string for secret patterns.
+//
+// The matching itself lives in pkg/vigil/policy so that the pattern list has
+// one implementation rather than two that drift. This wrapper exists for the
+// session record's shape, which is Vigil's internal audit format.
 func (s *SecretsScanner) ScanContent(content, filePath string) []session.PolicyViolation {
-	var violations []session.PolicyViolation
-
-	scanner := bufio.NewScanner(strings.NewReader(content))
-	lineNum := 0
-	for scanner.Scan() {
-		lineNum++
-		line := scanner.Text()
-		for i, re := range s.patterns {
-			if re.MatchString(line) {
-				violations = append(violations, session.PolicyViolation{
-					Rule:     "secrets.block_patterns",
-					Severity: "error",
-					Message:  fmt.Sprintf("Possible secret detected: pattern %q matched", s.names[i]),
-					File:     filePath,
-					Line:     lineNum,
-					Pattern:  s.names[i],
-				})
-			}
-		}
+	pub, err := vigilpolicy.NewSecrets(s.names...)
+	if err != nil {
+		// The patterns compiled once already at construction, so this cannot
+		// fail here; returning nothing rather than panicking keeps a scan from
+		// taking down an audit.
+		return nil
 	}
-
+	var violations []session.PolicyViolation
+	for _, v := range pub.ScanContent(content, filePath) {
+		violations = append(violations, session.PolicyViolation{
+			Rule:     v.Rule,
+			Severity: string(v.Severity),
+			Message:  v.Message,
+			File:     v.Source,
+			Line:     v.Line,
+			Pattern:  v.Pattern,
+		})
+	}
 	return violations
 }
 

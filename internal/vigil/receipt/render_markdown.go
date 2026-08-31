@@ -25,7 +25,22 @@ func RenderMarkdown(r Receipt) string {
 	fmt.Fprintf(&b, "| Attendance | %s |\n", r.Attendance)
 	fmt.Fprintf(&b, "| Steps | %d planned |\n", r.Steps)
 	fmt.Fprintf(&b, "| Outcome | %s |\n", r.Outcome())
-	fmt.Fprintf(&b, "| Policy | %s |\n\n", r.PolicyVersion)
+	fmt.Fprintf(&b, "| Policy | %s |\n", r.PolicyVersion)
+	if r.UnderKit() {
+		// What the run executed under, so "it answered from live data" is a
+		// claim the reader can check rather than take.
+		fmt.Fprintf(&b, "| Kit | %s %s |\n", r.Kit, r.KitVersion)
+		if r.KitHash != "" {
+			fmt.Fprintf(&b, "| Kit content | %s |\n", r.KitHash)
+		}
+		if r.Servers != "" {
+			fmt.Fprintf(&b, "| Servers | %s |\n", r.Servers)
+		}
+		if r.Grants != "" {
+			fmt.Fprintf(&b, "| Granted | %s |\n", r.Grants)
+		}
+	}
+	b.WriteString("\n")
 
 	fmt.Fprintf(&b, "**Requested** — as given by the user, shown verbatim as data:\n\n")
 	fmt.Fprintf(&b, "%s\n\n", fenceUntrusted(r.Request))
