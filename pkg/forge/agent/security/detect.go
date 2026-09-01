@@ -20,7 +20,12 @@ type pattern struct {
 
 var injectionPatterns = []pattern{
 	// Instruction override attempts
-	{name: "instruction_override", re: regexp.MustCompile(`(?i)(ignore|disregard|forget|override)\s+(all\s+)?(previous|above|prior|earlier)\s+(instructions?|rules?|prompts?|guidelines?)`), weight: 0.4},
+	// The qualifier is optional and a possessive may sit between it and the
+	// verb. Requiring "previous" to follow the verb directly let two common
+	// phrasings through: "ignore YOUR previous instructions" and the bare
+	// "disregard your instructions", neither of which is any less an override
+	// than the wording that was matched.
+	{name: "instruction_override", re: regexp.MustCompile(`(?i)(ignore|disregard|forget|override)\s+((all|any|the)\s+)?((your|my|its|these|those)\s+)?((previous|above|prior|earlier|preceding)\s+)?(instructions?|rules?|prompts?|guidelines?|directives?)`), weight: 0.4},
 	{name: "instruction_override", re: regexp.MustCompile(`(?i)new\s+(instructions?|rules?|task|objective)\s*:`), weight: 0.3},
 	{name: "instruction_override", re: regexp.MustCompile(`(?i)from\s+now\s+on\s+(you\s+)?(are|will|must|should)`), weight: 0.3},
 
