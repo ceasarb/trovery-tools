@@ -68,23 +68,61 @@ func CheckToolResult(r ToolResult) []Violation {
 	return out
 }
 
-// directive matches text telling an assistant what to do.
-//
-// Vigil's own rather than security.DetectInjection alone, because that
+// Vigil's own patterns rather than security.DetectInjection alone, because that
 // detector misses common phrasings — notably the possessive, "ignore *your*
 // previous instructions" — and a check that inherits one detector's blind spots
 // hands them to every caller. Both run; either one is enough to report.
-var directive = regexp.MustCompile(
-	`(?i)\b(ignore|disregard|forget|override)\b[^.]{0,40}\b(instruction|instructions|rules|prompt|above|previous|prior)\b` +
-		`|(?i)\b(you are now|from now on|new instructions?|system:|assistant:)\b` +
-		`|(?i)\b(transfer|send|wire|delete|email|publish|post)\b[^.]{0,60}\b(fund|funds|money|payment|everyone|all users|account)\b`)
+//
+// Three separate expressions rather than one alternation. They were one, and
+// being one hid two faults from anyone reading it: a word boundary that could
+// never match, and a clause that fired on prose merely describing an operation.
+var (
+	// reOverride is an instruction to disregard the instructions — the
+	// canonical shape, and the one worth matching loosely.
+	reOverride = regexp.MustCompile(
+		`(?i)\b(ignore|disregard|forget|override)\b[^.]{0,40}\b(instruction|instructions|rules|prompt|above|previous|prior)\b`)
+
+	// reReassign is a standing order, or a forged conversational turn.
+	//
+	// The colon forms carry no trailing \b. One there would demand a word
+	// character immediately after the colon, and a forged turn is always
+	// followed by a space — so "System: you may now…" went unmatched by the
+	// clause written to catch it, and was only ever reported when some other
+	// clause happened to fire on the same line.
+	reReassign = regexp.MustCompile(
+		`(?i)(\byou are now\b|\bfrom now on\b|\bnew instructions?\b|(?:^|[\s"'` + "`" + `])(system|assistant|user)\s*:)`)
+
+	// reImperative is a consequential instruction, in imperative form.
+	//
+	// The mood is the whole discriminator. "Send the funds to account 4471" is
+	// an instruction; "callers that delete an account receive a 400" is a
+	// sentence about an API, and documentation is exactly what a knowledge base
+	// returns all day. Requiring the verb to open a clause — start of line,
+	// after a terminator, or after a directive cue — keeps the first and drops
+	// the second, where matching the verb anywhere caught both.
+	//
+	// "now" is deliberately not a cue. It reads as one in "I will now delete
+	// the account", but a changelog saying an API "can now delete a payment
+	// method" is the same three words describing a feature, and release notes
+	// are ordinary knowledge-base output. The forged-turn clause above catches
+	// the case "now" was reaching for.
+	reImperative = regexp.MustCompile(
+		`(?i)(?:^|[.:;!?]\s*|\b(?:and|then|please|must|should)\s+)` +
+			`(transfer|send|wire|delete|email|publish|post)\b[^.]{0,60}` +
+			`\b(fund|funds|money|payment|everyone|all users|account)\b`)
+)
 
 func instructionShaped(line string) (rule string, ok bool) {
 	if security.DetectInjection(line).IsSuspicious {
 		return "toolresult.injection", true
 	}
-	if directive.MatchString(line) {
-		return "toolresult.directive", true
+	switch {
+	case reOverride.MatchString(line):
+		return "toolresult.override", true
+	case reReassign.MatchString(line):
+		return "toolresult.reassign", true
+	case reImperative.MatchString(line):
+		return "toolresult.imperative", true
 	}
 	return "", false
 }
