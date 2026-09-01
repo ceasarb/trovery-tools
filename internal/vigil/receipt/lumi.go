@@ -55,11 +55,17 @@ const runColumns = `id, at, request, steps, forecast_usd, actual_usd,
 // about that run and not an error to raise at whoever asks for the receipt.
 const kitColumns = `kit, kit_version, kit_hash, servers, grants`
 
-// hasKitColumns reports whether this store records kit provenance.
-func (s *LumiStore) hasKitColumns() bool {
+// flagColumn holds what Lumi's inspection objected to in content that arrived
+// from outside the run's intent (Lumi ADR-011). Added after kitColumns, and
+// tested for separately: a store can hold one and not the other, and a witness
+// that assumes they arrive together reports a scan error instead of a receipt.
+const flagColumn = `flags`
+
+// runColumnSet reports which optional columns this store actually has.
+func (s *LumiStore) runColumnSet() (hasKit, hasFlags bool) {
 	rows, err := s.db.Query(`PRAGMA table_info(runs)`)
 	if err != nil {
-		return false
+		return false, false
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -68,20 +74,28 @@ func (s *LumiStore) hasKitColumns() bool {
 		var notnull, pk int
 		var dflt sql.NullString
 		if err := rows.Scan(&cid, &name, &ctype, &notnull, &dflt, &pk); err != nil {
-			return false
+			return false, false
 		}
-		if name == "kit" {
-			return true
+		switch name {
+		case "kit":
+			hasKit = true
+		case "flags":
+			hasFlags = true
 		}
 	}
-	return false
+	return hasKit, hasFlags
 }
 
 func (s *LumiStore) columns() string {
-	if s.hasKitColumns() {
-		return runColumns + ", " + kitColumns
+	hasKit, hasFlags := s.runColumnSet()
+	cols := runColumns
+	if hasKit {
+		cols += ", " + kitColumns
 	}
-	return runColumns
+	if hasFlags {
+		cols += ", " + flagColumn
+	}
+	return cols
 }
 
 // Run loads one run by id.
@@ -110,23 +124,23 @@ func (s *LumiStore) scanRun(row *sql.Row) (Receipt, error) {
 	var r Receipt
 	var at string
 	var met, held int
-	var err error
-	if s.hasKitColumns() {
-		var kit, kitVersion, kitHash, servers, grants sql.NullString
-		err = row.Scan(&r.RunID, &at, &r.Request, &r.Steps,
-			&r.ForecastUSD, &r.ActualUSD, &r.OverheadUSD,
-			&r.PolicyVersion, &r.Attendance, &met, &held,
-			&kit, &kitVersion, &kitHash, &servers, &grants)
-		r.Kit, r.KitVersion, r.KitHash = kit.String, kitVersion.String, kitHash.String
-		r.Servers, r.Grants = servers.String, grants.String
-	} else {
-		err = row.Scan(&r.RunID, &at, &r.Request, &r.Steps,
-			&r.ForecastUSD, &r.ActualUSD, &r.OverheadUSD,
-			&r.PolicyVersion, &r.Attendance, &met, &held)
+	var kit, kitVersion, kitHash, servers, grants, flags sql.NullString
+
+	hasKit, hasFlags := s.runColumnSet()
+	dest := []any{&r.RunID, &at, &r.Request, &r.Steps,
+		&r.ForecastUSD, &r.ActualUSD, &r.OverheadUSD,
+		&r.PolicyVersion, &r.Attendance, &met, &held}
+	if hasKit {
+		dest = append(dest, &kit, &kitVersion, &kitHash, &servers, &grants)
 	}
-	if err != nil {
+	if hasFlags {
+		dest = append(dest, &flags)
+	}
+	if err := row.Scan(dest...); err != nil {
 		return Receipt{}, err
 	}
+	r.Kit, r.KitVersion, r.KitHash = kit.String, kitVersion.String, kitHash.String
+	r.Servers, r.Grants, r.Flags = servers.String, grants.String, flags.String
 	r.At, _ = time.Parse(time.RFC3339, at)
 	r.ContractMet = met == 1
 	r.Held = held == 1

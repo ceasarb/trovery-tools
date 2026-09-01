@@ -28,7 +28,32 @@ func RenderText(r Receipt) string {
 	fmt.Fprintf(&b, "    Actual:    $%.4f (retries and escalations included)\n", r.ActualUSD)
 	fmt.Fprintf(&b, "    Overhead:  $%.4f of actual (planning + classification)\n\n", r.OverheadUSD)
 
-	fmt.Fprintf(&b, "  Policy:      %s\n\n", r.PolicyVersion)
+	fmt.Fprintf(&b, "  Policy:      %s\n", r.PolicyVersion)
+	if r.UnderKit() {
+		// What the run executed under, so "it answered from live data" is a
+		// claim the reader can check rather than take.
+		fmt.Fprintf(&b, "\n  Kit\n")
+		fmt.Fprintf(&b, "    Name:      %s %s\n", r.Kit, r.KitVersion)
+		if r.KitHash != "" {
+			fmt.Fprintf(&b, "    Content:   %s\n", r.KitHash)
+		}
+		if r.Servers != "" {
+			fmt.Fprintf(&b, "    Servers:   %s\n", r.Servers)
+		}
+		if r.Grants != "" {
+			fmt.Fprintf(&b, "    Granted:   %s\n", r.Grants)
+		}
+	}
+	if r.Flagged() {
+		// Rendered as what it is: a heuristic objected, and the run carried on.
+		// Stating it as a finding rather than a verdict is the whole posture —
+		// the harness's own boundary is what stops anything.
+		fmt.Fprintf(&b, "\n  Inspection flagged (reported, not blocked)\n")
+		for _, line := range strings.Split(r.Flags, "\n") {
+			fmt.Fprintf(&b, "    %s\n", line)
+		}
+	}
+	b.WriteString("\n")
 
 	fmt.Fprintf(&b, "  This receipt covers what the harness recorded for this run.\n")
 	fmt.Fprintf(&b, "  Per-step detail — models used, effect-gate decisions — is not\n")

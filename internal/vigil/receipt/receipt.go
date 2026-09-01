@@ -15,11 +15,11 @@
 // ADR-012 sends these fixes to Lumi's engine (adding to what the TCB
 // records), not here:
 //
-//  0. Whole runs can go unrecorded: Engine.Execute's trivial fast path
-//     (`if p.Trivial`) and its step-failure exits (runStep error other than
-//     held; done-when not satisfied) all return without e.record(), so a
-//     completed trivial answer or a failed run leaves no run row at all —
-//     invisible to any receipt. Verified live 2026-08-27 on both paths.
+//  0. CLOSED 2026-09-01. Whole runs used to go unrecorded: Engine.Execute's
+//     trivial fast path and its failed exits returned without e.record(), so a
+//     completed trivial answer or a failed run left no row at all. Lumi now
+//     defers the record across every exit from Execute, so a receipt renders
+//     for a run that failed.
 //  1. Per-step records: step descriptions, model/provider per step, per-step
 //     cost, attempts and failovers. contract.Ledger holds these in memory and
 //     they die at process exit; only the step count survives.
@@ -69,7 +69,21 @@ type Receipt struct {
 	KitHash    string // content hash approved at install
 	Servers    string // servers the run attached, comma-separated
 	Grants     string // capabilities the kit was approved for
+
+	// Flags is what the harness's inspection objected to in content that
+	// arrived from outside the run's own intent — tool results, and the tool
+	// descriptions read before any of them. One finding per line.
+	//
+	// Reported, never a verdict. Lumi ADR-011 flags and does not block: the
+	// guarantee lives in the hold at its effect boundary, and a heuristic that
+	// reported certainty would be lying. A receipt showing these says a check
+	// objected and the run carried on — which is the fact, and is why the
+	// check is worth recording at all.
+	Flags string
 }
+
+// Flagged reports whether inspection objected to anything during this run.
+func (r Receipt) Flagged() bool { return r.Flags != "" }
 
 // UnderKit reports whether this run has kit provenance recorded.
 func (r Receipt) UnderKit() bool { return r.Kit != "" }
