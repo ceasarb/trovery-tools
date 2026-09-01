@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/ceasarb/trovery-tools/pkg/forge/server/harness"
-	"github.com/ceasarb/trovery-tools/internal/forge/server/validate"
+	"github.com/ceasarb/trovery-tools/pkg/forge/server/validate"
 	"github.com/ceasarb/trovery-tools/pkg/forge/shared/config"
 	"github.com/ceasarb/trovery-tools/pkg/forge/shared/console"
 	"github.com/spf13/cobra"
